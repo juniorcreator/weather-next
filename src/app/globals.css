@@ -7,6 +7,30 @@
   }
 }
 
+@theme colors {
+  --color-dark-1: #2f3137;
+  --color-bg-dark-1: #262a2e;
+  --color-bg-dark-2: #2e3034;
+  --color-bg-active-1: #65a6bd;
+  --color-border-dark-1: #44494c;
+  --color-border-active-1: #81d4e9;
+}
+
 body {
+  background-color: #262a2e;
+  color: #fff;
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.container {
+  max-width: 960px;
+  margin: auto;
+  padding: 0 30px;
+}
+
+@layer components {
+  .current-item-details {
+    @apply  bg-[#2f3137] rounded-[10px] p-3 text-white/70 font-bold;
+  }
+}
+
