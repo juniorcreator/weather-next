@@ -14,10 +14,16 @@
   --color-bg-active-1: #65a6bd;
   --color-border-dark-1: #44494c;
   --color-border-active-1: #81d4e9;
+  --color-app-dark: #2e3034;
+  --color-app-muted: #6b6d70;
 }
+/*box-shadow: 1px -1px 8px 0px #8a92ab57;*/
 
 body {
-  background-color: #262a2e;
+  /*background-color: #262a2e;*/
+  /*background: linear-gradient(127deg, #262a2e, #262a2e85);*/
+  background: linear-gradient(127deg, #262a2e, rgb(18 44 70 / 52%));
+
   color: #fff;
   font-family: Arial, Helvetica, sans-serif;
 }
