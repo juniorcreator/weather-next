@@ -10,8 +10,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Get Weather",
-  description: "Weather forecast",
+  title: "Get weather",
+  description: "weather forecast",
 };
 
 export default function RootLayout({

@@ -35,13 +35,13 @@ function interpColor(c1: ColorRGB, c2: ColorRGB, t: number): ColorRGB {
 export function getAppleStyleTempColor(temp: number): string {
   // узловые точки
   const stops: [number, string][] = [
-    [-40, "#0033aa"],
+    [-45, "#0033aa"],
     [-10, "#3366ff"],
     [0, "#00ccff"],
     [15, "#66ffcc"],
     [30, "#ffcc66"],
-    [45, "#ff6600"],
-    [55, "#cc0000"],
+    [35, "#ff6600"],
+    [45, "#cc0000"],
   ];
 
   // если temp ниже минимума или выше максимума — зажать

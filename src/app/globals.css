@@ -36,7 +36,10 @@ body {
 
 @layer components {
   .current-item-details {
-    @apply  bg-[#2f3137] rounded-[10px] p-3 text-white/70 font-bold;
+    @apply  bg-[#2f3137] rounded-[10px] p-3 text-white/80 font-bold;
+  }
+  .day-item-details {
+    @apply  bg-[#2f3137] flex flex-wrap items-center rounded-[10px] px-2 py-1 text-white/80 font-bold;
   }
 }
 
