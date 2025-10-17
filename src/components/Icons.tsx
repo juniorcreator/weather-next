@@ -7,7 +7,7 @@ const AllIcons = () => {
     <ul className="flex flex-wrap">
       {weatherIcons.map((icon, index) => (
         <li className=" mb-3 mx-2" key={icon.code}>
-          <p className="text-center text-xs border-1">
+          <p className="text-center text-xs border">
             {icon.name}-{index + 1}
           </p>
           <p className="text-center">code: {icon.icon}</p>
@@ -28,7 +28,7 @@ const AllIcons = () => {
                 src={`//cdn.weatherapi.com/weather/64x64/day/${icon.icon}.png`}
               />
             </div>
-            <span className="px-[1px] bg-black"></span>
+            <span className="px-px bg-black"></span>
           </div>
         </li>
       ))}

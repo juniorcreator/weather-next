@@ -158,7 +158,7 @@ const SevenDayItem = ({ weather, selectedIndex }: SevenDayItemProps) => {
       <h3 className="text-md font-bold flex-1 my-2 pl-1 text-white/90">Saturday, Details</h3>
 
       <ul className="flex flex-wrap gap-2 mt-2 text-center">
-        {/*<li className="bg-[#2f3137]/50 flex flex-wrap items-center rounded-[10px] px-3 py-3 text-white/80 font-bold">*/}
+        {/*<li className="bg-dark-1/50 flex flex-wrap items-center rounded-[10px] px-3 py-3 text-white/80 font-bold">*/}
         {/*  <div className="flex">*/}
         {/*    <div className="flex items-center">*/}
         {/*      <img className="size-6 mx-1" src="/sunrise.png" alt="icon" />*/}

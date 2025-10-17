@@ -2,8 +2,8 @@ import Search from "@/components/search/Search";
 
 export default function Home() {
   return (
-    <div className="pt-10">
-      <div className="container">
+    <div id="root">
+      <div className="min-h-screen bg-background">
         <Search />
       </div>
     </div>
