@@ -1,16 +1,16 @@
 import React from "react";
-import {RootWeather} from "@/types/weather";
+import {Forecastday, RootWeather} from "@/types/weather";
 
 const SevenDaysItems = ({weather}: {weather: RootWeather}) => {
   return (
     <ul className="flex gap-2 mb-5">
-      {weather.forecast.forecastday.map((day: any, index: number) => (
+      {weather.forecast.forecastday.map((day: Forecastday, index: number) => (
         <li
-          className={`py-2 px-3 cursor-pointer rounded-[10px] border-2 text-white/70 font-bold ${index === 0 ? "bg-[#65A6BD] border-[#81D4E9]" : "bg-[#2e3034] border-[#44494C]"}`}
+          className={`flex-1 py-2 px-3 cursor-pointer rounded-[10px] text-white/80 font-bold ${index === 0 ? "bg-c2/30 shadow-l " : "bg-c2 hover:bg-c2/30"}`}
           key={day.date}
         >
           <p className="text-center mb-2">
-            {new Date(day.date).toLocaleDateString("en-US", {
+            {index === 0 ? "Today" : index === 1 ? "Tomorrow" : new Date(day.date).toLocaleDateString("en-US", {
               weekday: "short",
             })}
           </p>

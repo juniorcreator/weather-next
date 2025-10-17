@@ -61,7 +61,7 @@ const SevenDayItem = ({ weather, selectedIndex }: SevenDayItemProps) => {
   ];
 
   return (
-    <div className="border-2 border-[#44494C] shadow shadow-[#44494C] rounded-md p-3">
+    <div className="shadow shadow-m rounded-[10px] p-3">
       <div className="flex flex-wrap items-start">
         <div className="w-75 mb-2">
           <h3 className="text-2xl font-bold mb-2 text-white/90">Saturday, 12 Sep</h3>
@@ -78,15 +78,14 @@ const SevenDayItem = ({ weather, selectedIndex }: SevenDayItemProps) => {
         </div>
         {/*sun details*/}
         <div className="flex flex-1 justify-end">
-          <div className=" rounded-[10px] py-1 px-2 text-white/90 text-sm">
+          <div className="rounded-[10px] py-1 px-2 text-white/90 text-sm bg-c1-lighter">
+            <span>Sun</span>
             <div className="flex items-center">
-              Sunrise
-              <img className="size-6 mx-1" src="/sunrise.png" alt="icon" />
+              Rise {" "}
               {weather.forecast.forecastday[0].astro.sunrise}
             </div>
             <div className="flex items-center">
-              Sunset
-              <img className="size-6 mx-1" src="/sunset.png" alt="icon" />
+              Set {" "}
               {weather.forecast.forecastday[0].astro.sunset}
             </div>
           </div>
@@ -101,7 +100,7 @@ const SevenDayItem = ({ weather, selectedIndex }: SevenDayItemProps) => {
           {filteredHours.map((hour: Hour, index: number) => {
             return (
               <li
-                className={`py-2 px-3 cursor-pointer rounded-[10px] border-2 text-white/70 font-bold bg-[#2e3034] border-[#44494C] text-center`}
+                className={`flex-1 shadow-s py-2 px-3 cursor-pointer rounded-[10px] text-white/80 font-bold bg-c2/80  text-center`}
                 key={hour.time}
               >
                 <div className={`mb-1`}>
@@ -173,7 +172,7 @@ const SevenDayItem = ({ weather, selectedIndex }: SevenDayItemProps) => {
         {/*</li>*/}
         {dayDetailsItems.map((item, index) => {
           return (
-            <li key={item.title} className="bg-[#2f3137] flex flex-wrap items-center rounded-[10px] px-3 py-3 text-white/80 font-bold">
+            <li key={item.title} className="bg-c2/80 flex flex-wrap items-center rounded-[10px] px-3 py-3 text-white/80 font-bold">
               <div className="">{item.title}</div>
               <div className="flex justify-center px-3">
                 <img className="size-7" src={item.img} alt={item.alt} />

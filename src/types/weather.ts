@@ -101,15 +101,9 @@ export interface Day {
   daily_chance_of_rain: number
   daily_will_it_snow: number
   daily_chance_of_snow: number
-  condition: Condition2
+  condition: Condition
   uv: number
   air_quality: AirQuality
-}
-
-export interface Condition2 {
-  text: string
-  icon: string
-  code: number
 }
 
 export interface Astro {

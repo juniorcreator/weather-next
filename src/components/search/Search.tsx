@@ -1,6 +1,6 @@
 "use client";
 
-import { Search as SearchIcon } from "lucide-react";
+import {MapPin, Search as SearchIcon} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { getWeather } from "@/utils/api-weatherapi";
 import { RootWeather } from "@/types/weather";
@@ -62,15 +62,18 @@ const Search = () => {
         <div className="relative max-w-[300px] w-full">
           <SearchIcon
             onClick={() => handleFetchData(city)}
-            className="absolute cursor-pointer hover:scale-110 inset-x-0 size-5 left-2 top-1.5 text-[#8F9395]"
+            className="absolute cursor-pointer hover:scale-110 inset-x-0 size-5 left-2 top-1.5 text-white/80"
           />
           <input
             type="text"
             onKeyDown={handleKeyDown}
             onChange={(e) => setCity(e.target.value)}
-            placeholder="Select a city"
-            className="rounded-[10px] text-[#8F9395] border border-[#8F9395] py-1 pl-8 pr-2 w-full"
+            placeholder="Search location..."
+            className="rounded-[10px] bg-c2 text-white border border-c2/60 outline-none focus:border-c4 py-1 pl-8 pr-2 w-full"
           />
+        </div>
+        <div className="cursor-pointer p-2 bg-black border-c2 rounded-[10px] hover:bg-c4 hover:text-black border">
+          <MapPin className="size-4" />
         </div>
         <ToggleCF />
       </div>
@@ -84,10 +87,10 @@ const Search = () => {
           <p className="text-white/85 text-1xl font-bold mt-4">Current weather</p>
           <div className="flex items-start mt-2 mb-2 gap-5">
             <div
-              className={`flex items-center relative justify-between p-4 py-4 w-120 rounded-[10px]`}
+              className={`flex flex-1 items-center relative justify-between p-4 py-4 w-120 rounded-[10px]`}
             >
               <div
-                className="absolute left-0 top-0 w-full h-full rounded-[10px]  z-[-1] backdrop-blur-2xl transition-all duration-150 opacity-70"
+                className="absolute left-0 top-0 w-full h-full rounded-[10px]  z-[-1] transition-all duration-150 opacity-80"
                 style={{
                   background: `linear-gradient(to bottom right, ${bg} 50%, ${lighten(bg, 20)} 70%)`
                 }}
@@ -132,7 +135,6 @@ const Search = () => {
               </div>
             </div>
             <div>
-
               <DayDetails weather={weather} />
               <SunDetails weather={weather} />
             </div>

@@ -18,12 +18,12 @@ const HourlyDetails = ({ weather }: { weather: RootWeather }) => {
   console.log(getHourRangeLine(45, -45, 10));
   return (
     <div className="mb-2">
-      <p className="text-white/85 text-1xl font-bold mb-2">Hourly Forecast</p>
+      <p className="text-white/80 text-1xl font-bold mb-2">Hourly Forecast</p>
       <ul className="flex flex-wrap items-center gap-2">
         {filteredHours.map((hour: Hour, index: number) => {
           return (
             <li
-              className={`py-2 px-2 cursor-pointer rounded-[10px] border-2 text-white/70 font-bold ${index === closestTimeIndex ? "bg-[#65A6BD]/80 border-[#81D4E9]/80" : "bg-[#2e3034] border-[#44494C]"} text-center`}
+              className={`py-2 flex-1  px-2 cursor-pointer rounded-[10px] text-white/80 font-bold ${index === closestTimeIndex ? "bg-c2/30 shadow-l" : "bg-c2"} text-center`}
               key={hour.time}
             >
               <div className={`mb-1`}>
@@ -40,15 +40,19 @@ const HourlyDetails = ({ weather }: { weather: RootWeather }) => {
                   alt={"Icon " + hour.condition.text}
                 />
               </div>
-              <div className="mb-1 flex items-center">
+              <div className="mb-1 flex justify-start">
                 <img className="size-5 mr-1" src="/wind.png" alt="wind icon" />{" "}
-                {Math.floor(hour.wind_kph)} m/s
+               <span className="flex-1"> {Math.floor(hour.wind_mph)} mi</span>
               </div>
-              <div className="mb-1 flex items-center justify-center">
+              <div className="mb-1 flex items-center justify-start">
                 <img className="size-5 mr-1" src="/chance-of-rain.png" alt="Icon" />{" "}
-                {hour.chance_of_rain}%
+                <span className="flex-1">{hour.chance_of_rain}%</span>
               </div>
-              <div className="mb-1">{Math.floor(hour.temp_c)}°</div>
+              <div className="mb-1 flex items-center justify-start">
+
+                <img className="size-5 mr-1" src="/thermometer.png" alt="Icon" />{" "}
+                <span className="flex-1">{Math.floor(hour.temp_c)}°</span>
+              </div>
               <TempCenterBar maxTemp={45} minTemp={-45} temp={hour.temp_c} />
               {/*<div className="rounded-2xl p-1 relative bg-[#3f4249]">*/}
               {/*  <span*/}

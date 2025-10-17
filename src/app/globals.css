@@ -1,15 +1,41 @@
 @import "tailwindcss";
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+
+:root {
+  /* bg-colors */
+  --color1: hsl(240deg, 27%, 18%);
+  --color1-lighter: hsl(240deg, 27%, 25%);
+  --color2: hsl(232deg 17% 35%);
+  --color3: hsl(309deg 6% 58%);
+  --color4: hsl(11deg 24% 72%);
+  --color5: hsl(21deg 35% 92%);
+  --primary: oklch(0.9 0.17 100);
+  --bg-dark: oklch(0.1 0 264);
+  --bg: oklch(0.2 0 264);
+  --bg-light: oklch(0.3 0 264);
+  /* text-colors */
+  --text: oklch(0.96 0 264);
+  --text-muted: oklch(0.76 0 264);
+  /* shadows */
+  --shadow-s: inset 0 1px 2px #ffffff30, /* top highlight */ 0 1px 2px #00000030,
+    /* dark shadow */ 0 2px 4px #00000015; /* soft shadow */
+  --shadow-m: inset 0 1px 2px #ffffff50, /* top highlight */ 0 2px 4px #00000030,
+    /* dark shadow */ 0 4px 8px #00000015; /* soft shadow */
+  --shadow-l: inset 0 1px 2px #ffffff70, /* top highlight */ 0 4px 6px #00000030,
+    /* dark shadow */ 0 6px 10px #00000015; /* soft shadow */
 }
 
 @theme colors {
   --color-dark-1: #2f3137;
+  --color-c1: var(--color1);
+  --color-c1-lighter: var(--color1-lighter);
+  --color-c2: var(--color2);
+  --color-c3: var(--color3);
+  --color-c4: var(--color4);
+  --color-c5: var(--color5);
   --color-bg-dark-1: #262a2e;
+  --color-bg-light: oklch(0.3 0 264);
   --color-bg-dark-2: #2e3034;
   --color-bg-active-1: #65a6bd;
   --color-border-dark-1: #44494c;
@@ -20,12 +46,12 @@
 /*box-shadow: 1px -1px 8px 0px #8a92ab57;*/
 
 body {
-  /*background-color: #262a2e;*/
+  background-color: var(--color1);
   /*background: linear-gradient(127deg, #262a2e, #262a2e85);*/
-  background: linear-gradient(127deg, #262a2e, rgb(18 44 70 / 52%));
-
+  /*background: linear-gradient(127deg, #262a2e, rgb(18 44 70 / 52%));*/
   color: #fff;
   font-family: Arial, Helvetica, sans-serif;
+
 }
 
 .container {
@@ -36,10 +62,40 @@ body {
 
 @layer components {
   .current-item-details {
-    @apply  bg-[#2f3137] rounded-[10px] p-3 text-white/80 font-bold;
+    @apply  bg-c2 rounded-[10px] p-3 text-white/80 font-bold;
+    box-shadow: var(--shadow-m);
   }
   .day-item-details {
-    @apply  bg-[#2f3137] flex flex-wrap items-center rounded-[10px] px-2 py-1 text-white/80 font-bold;
+    @apply  bg-c2 flex flex-wrap items-center rounded-[10px] px-2 py-1 text-white/80 font-bold;
   }
 }
+
+
+
+/* shadows */
+.shadows {
+  background: var(--bg);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  padding: 1rem;
+  gap: 1rem;
+  margin: 2rem 0 4rem 0;
+  border-radius: 1.5rem;
+}
+.shadows div {
+  background: var(--bg-light);
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+.shadow-s {
+  box-shadow: var(--shadow-s);
+}
+.shadow-m {
+  box-shadow: var(--shadow-m);
+}
+.shadow-l {
+  box-shadow: var(--shadow-l);
+}
+
 
