@@ -5,7 +5,7 @@ import {RootWeather} from "@/types/weather";
 const DayDetails = ({weather}: {weather: RootWeather}) => {
   return (
     <ul className="grid grid-cols-3 w-full gap-3 text-center">
-      <li className="current-item-details">
+      <li>
         <div>AQI</div>
         <div className="flex justify-center py-1">
           <img
@@ -20,14 +20,14 @@ const DayDetails = ({weather}: {weather: RootWeather}) => {
           )}
         </div>
       </li>
-      <li className="current-item-details">
+      <li>
         <div>Humidity</div>
         <div className="flex justify-center py-1">
           <img className="size-7" src="/humidity.png" alt="icon" />
         </div>
         <div>{weather.current.humidity}%</div>
       </li>
-      <li className="current-item-details">
+      <li>
         <div>Wind</div>
         <div className="flex justify-center py-1 items-center">
                     <span className="text-xs pr-1">
@@ -38,21 +38,21 @@ const DayDetails = ({weather}: {weather: RootWeather}) => {
         </div>
         <div>{Math.floor(weather.current.wind_mph)} mph</div>
       </li>
-      <li className="current-item-details">
+      <li>
         <div>UV index</div>
         <div className="flex justify-center py-1">
           <img className="size-7" src="/uv-index.png" alt="icon" />
         </div>
         <div>{weather.current.uv}</div>
       </li>
-      <li className="current-item-details">
+      <li>
         <div>Pressure</div>
         <div className="flex justify-center py-1">
           <img className="size-7" src="/pressure.png" alt="icon" />
         </div>
         <div>{weather.current.pressure_in} in</div>
       </li>
-      <li className="current-item-details">
+      <li>
         <div>Visibility</div>
         <div className="flex justify-center py-1">
           <img className="size-7" src="/visibility.png" alt="icon" />

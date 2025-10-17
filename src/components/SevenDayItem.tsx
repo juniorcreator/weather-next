@@ -61,7 +61,7 @@ const SevenDayItem = ({ weather, selectedIndex }: SevenDayItemProps) => {
   ];
 
   return (
-    <div className="shadow shadow-m rounded-[10px] p-3">
+    <div className="shadow-m rounded-[10px] p-3">
       <div className="flex flex-wrap items-start">
         <div className="w-75 mb-2">
           <h3 className="text-2xl font-bold mb-2 text-white/90">Saturday, 12 Sep</h3>
