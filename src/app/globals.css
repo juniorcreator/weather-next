@@ -1,47 +1,58 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
+/*@custom-variant dark (&:is(.dark *));*/
+:root {
+  /* shadows */
+  --shadow-s: inset 0 1px 2px #ffffff30, /* top highlight */ 0 1px 2px #00000030,
+    /* dark shadow */ 0 2px 4px #00000015; /* soft shadow */
+  --shadow-m: inset 0 1px 2px #ffffff50, /* top highlight */ 0 2px 4px #00000030,
+    /* dark shadow */ 0 4px 8px #00000015; /* soft shadow */
+  --shadow-l: inset 0 1px 2px #ffffff70, /* top highlight */ 0 4px 6px #00000030,
+    /* dark shadow */ 0 6px 10px #00000015; /* soft shadow */
+}
 /* Design System - All colors MUST be HSL */
-@theme {
+@theme inline {
   /* Color Palette */
-  --color-background: 237 29% 18%;
-  --color-foreground: 240 11% 94%;
+  --color-background: hsl(237 29% 18%);
+  --color-foreground: hsl(240 11% 94%);
 
-  --color-card: 237 21% 34%;
-  --color-card-foreground: 240 11% 94%;
+  --color-card: hsl(237 21% 34%);
+  --color-card-foreground: hsl(240 11% 94%);
 
-  --color-popover: 237 29% 18%;
-  --color-popover-foreground: 240 11% 94%;
+  --color-popover: hsl(237 29% 18%);
+  --color-popover-foreground: hsl(240 11% 94%);
 
-  --color-primary: 318 10% 73%;
-  --color-primary-foreground: 237 29% 18%;
+  --color-primary: hsl(318 10% 73%);
+  --color-primary-foreground: hsl(237 29% 18%);
 
-  --color-secondary: 318 10% 58%;
-  --color-secondary-foreground: 240 11% 94%;
+  --color-secondary: hsl(318 10% 58%);
+  --color-secondary-foreground: hsl(240 11% 94%);
 
-  --color-muted: 237 21% 34%;
-  --color-muted-foreground: 318 10% 73%;
+  --color-muted: hsl(237 21% 34%);
+  --color-muted-foreground: hsl(318 10% 73%);
 
-  --color-accent: 318 10% 58%;
-  --color-accent-foreground: 240 11% 94%;
+  --color-accent: hsl(318 10% 58%);
+  --color-accent-foreground: hsl(240 11% 94%);
 
-  --color-destructive: 0 84.2% 60.2%;
-  --color-destructive-foreground: 240 11% 94%;
+  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-destructive-foreground: hsl(240 11% 94%);
 
-  --color-border: 237 21% 40%;
-  --color-input: 237 21% 34%;
-  --color-ring: 318 10% 73%;
+  --color-border: hsl(237 21% 40%);
+  --color-input: hsl(237 21% 34%);
+  --color-ring: hsl(318 10% 73%);
 
   /* Temperature Gradients */
-  --color-temp-cold-start: 198 93% 60%;
-  --color-temp-cold-end: 214 84% 56%;
-  --color-temp-cool-start: 180 76% 68%;
-  --color-temp-cool-end: 174 72% 56%;
-  --color-temp-mild-start: 45 93% 70%;
-  --color-temp-mild-end: 35 91% 65%;
-  --color-temp-warm-start: 25 95% 63%;
-  --color-temp-warm-end: 15 86% 58%;
-  --color-temp-hot-start: 4 90% 58%;
-  --color-temp-hot-end: 0 84% 52%;
+  --color-temp-cold-start: hsl(198 93% 60%);
+  --color-temp-cold-end: hsl(214 84% 56%);
+  --color-temp-cool-start: hsl(180 76% 68%);
+  --color-temp-cool-end: hsl(174 72% 56%);
+  --color-temp-mild-start: hsl(45 93% 70%);
+  --color-temp-mild-end: hsl(35 91% 65%);
+  --color-temp-warm-start: hsl(25 95% 63%);
+  --color-temp-warm-end: hsl(15 86% 58%);
+  --color-temp-hot-start: hsl(4 90% 58%);
+  --color-temp-hot-end: hsl(0 84% 52%);
 
   /* Border Radius */
   --radius-lg: 0.75rem;
@@ -49,7 +60,7 @@
   --radius-sm: calc(0.75rem - 4px);
 
   /* Font Family */
-  --font-family-sans: 'Inter', system-ui, sans-serif;
+  --font-family-sans: system-ui, sans-serif;
 
   /* Animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;
@@ -70,12 +81,12 @@
 /* Base Styles */
 @layer base {
   * {
-    border-color: hsl(var(--color-border));
+    border-color: var(--color-border);
   }
 
   body {
-    background-color: hsl(var(--color-background));
-    color: hsl(var(--color-foreground));
+    background-color: var(--color-background);
+    color: var(--color-foreground);
     font-family: var(--font-family-sans);
     font-feature-settings: "kern" 1, "liga" 1;
     -webkit-font-smoothing: antialiased;
@@ -98,21 +109,21 @@
 
   .skeleton-pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    background-color: hsl(var(--color-muted) / 0.5);
+    background-color: var(--color-muted) / 0.5;
     border-radius: 0.25rem;
   }
 
   .metric-card {
-    background-color: hsl(var(--color-card) / 0.5);
+    background-color: hsl(237 21% 34% / 0.5);
     backdrop-filter: blur(8px);
     border-radius: 0.75rem;
     padding: 1rem;
-    border: 1px solid hsl(var(--color-border) / 0.5);
+    border: 1px solid hsl(237 21% 40% / 0.5);
     transition: all 0.3s ease;
   }
 
   .metric-card:hover {
-    border-color: hsl(var(--color-border));
+    border-color: var(--color-border);
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   }
 
@@ -126,18 +137,6 @@
   }
 }
 
-
-:root {
-  /* shadows */
-  --shadow-s: inset 0 1px 2px #ffffff30, /* top highlight */ 0 1px 2px #00000030,
-    /* dark shadow */ 0 2px 4px #00000015; /* soft shadow */
-  --shadow-m: inset 0 1px 2px #ffffff50, /* top highlight */ 0 2px 4px #00000030,
-    /* dark shadow */ 0 4px 8px #00000015; /* soft shadow */
-  --shadow-l: inset 0 1px 2px #ffffff70, /* top highlight */ 0 4px 6px #00000030,
-    /* dark shadow */ 0 6px 10px #00000015; /* soft shadow */
-}
-
-
 /* shadows */
 .shadow-s {
   box-shadow: var(--shadow-s);
@@ -149,4 +148,28 @@
   box-shadow: var(--shadow-l);
 }
 
+/*@layer base {*/
+/*  * {*/
+/*    @apply border-border outline-ring/50;*/
+/*  }*/
+/*  body {*/
+/*    @apply bg-background text-foreground;*/
+/*  }*/
+/*}*/
+.styled-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+.styled-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.styled-scroll::-webkit-scrollbar-thumb {
+  /*background-color: rgba(100, 100, 100, 0.4);*/
+  background-color: hsl(237 21% 40% / 0.5);
+  border-radius: 4px;
+}
+.styled-scroll:hover::-webkit-scrollbar-thumb {
+  /*background-color: rgba(100, 100, 100, 0.7);*/
+  background-color: hsl(317 10% 72% / 0.5);
+}
 
