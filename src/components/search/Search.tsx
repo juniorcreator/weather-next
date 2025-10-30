@@ -112,15 +112,15 @@ const Search = () => {
 
       {/*{error && <div className="text-center">{error}</div>}*/}
       <main className="container mx-auto p-6 space-y-6 max-w-5xl">
-        <div className="grid lg:grid-cols-3 gap-6 lg:items-stretch">
-          <div className="lg:col-span-2 flex">
+        <div className="grid lg:grid-cols-20 gap-3 lg:items-stretch">
+          <div className="lg:col-span-12 flex">
             <CurrentWeatherCard
               weather={weather}
               unit="C"
               locationName={weather?.location.name}
             />
           </div>
-          <div className="space-y-4 flex flex-col">
+          <div className="space-y-3 lg:col-span-8 flex flex-col">
             <MetricsGrid
               weather={weather.current}
               airQuality={weather?.current.air_quality}

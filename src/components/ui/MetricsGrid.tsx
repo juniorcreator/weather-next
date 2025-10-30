@@ -14,13 +14,13 @@ export function MetricsGrid({ weather, airQuality }: MetricsGridProps) {
     {
       icon: Gauge,
       label: 'AQI',
-      value: airQuality["us-epa-index"],
+      value: airQuality["us-epa-index"] + ' of 10',
       subtitle: usEpaIndexText(airQuality["us-epa-index"]),
     },
     {
       icon: Droplets,
       label: 'Humidity',
-      value: `${Math.round(weather.humidity)}%`,
+      value: `${Math.round(weather.humidity)} %`,
       subtitle: '',
     },
     {
@@ -32,13 +32,13 @@ export function MetricsGrid({ weather, airQuality }: MetricsGridProps) {
     {
       icon: Sun,
       label: 'UV Index',
-      value: weather.uv,
+      value: weather.uv + " of 11",
       subtitle: weather.uv < 3 ? 'Low' : weather.uv < 6 ? 'Moderate' : 'High',
     },
     {
       icon: Compass,
       label: 'Pressure',
-      value: `${weather.precip_in.toFixed(2)} in`,
+      value: `${Math.floor(weather.pressure_in)} in`,
       subtitle: '',
     },
     {
@@ -50,14 +50,14 @@ export function MetricsGrid({ weather, airQuality }: MetricsGridProps) {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 h-full">
       {metrics.map((metric) => (
-        <div key={metric.label} className="metric-card">
+        <div key={metric.label} className="metric-card px-3 py-3">
           <div className="flex items-start justify-between mb-2">
-            <metric.icon className="h-5 w-5 text-primary" />
+            <metric.icon className="size-5 text-primary" />
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wide">{metric.label}</span>
           </div>
-          <div className="text-2xl font-black">{metric.value}</div>
+          <div className="text-xl font-bold">{metric.value}</div>
           {metric.subtitle && (
             <div className="text-xs font-semibold text-muted-foreground mt-1">{metric.subtitle}</div>
           )}

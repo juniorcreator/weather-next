@@ -2,7 +2,7 @@ import React from "react";
 
 const ToggleCF = () => {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-1">
       <span>°C</span>
       <label className="relative inline-flex items-center cursor-pointer">
         <input type="checkbox" className="sr-only peer" />

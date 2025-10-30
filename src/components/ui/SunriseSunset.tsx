@@ -8,14 +8,14 @@ interface SunriseSunsetProps {
 
 export function SunriseSunset({ sunrise, sunset }: SunriseSunsetProps) {
   return (
-    <div className="metric-card bg-card/50 flex items-center justify-around">
+    <div className="metric-card px-3 py-3 bg-card/50 flex items-center justify-around">
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-lg bg-orange-500/10">
           <Sunrise className="h-5 w-5 text-orange-400" />
         </div>
         <div>
-          <div className="text-xs text-muted-foreground">Sunrise</div>
-          <div className="font-semibold">{sunrise}</div>
+          <div className="text-xs font-bold uppercase text-muted-foreground">Sunrise</div>
+          <div className="font-bold">{sunrise}</div>
         </div>
       </div>
 
@@ -26,8 +26,8 @@ export function SunriseSunset({ sunrise, sunset }: SunriseSunsetProps) {
           <Sunset className="h-5 w-5 text-indigo-400" />
         </div>
         <div>
-          <div className="text-xs text-muted-foreground">Sunset</div>
-          <div className="font-semibold">{sunset}</div>
+          <div className="text-xs uppercase font-bold text-muted-foreground">Sunset</div>
+          <div className="font-bold">{sunset}</div>
         </div>
       </div>
     </div>

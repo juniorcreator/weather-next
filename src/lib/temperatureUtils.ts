@@ -1,5 +1,7 @@
 // Temperature conversion and gradient utilities
 
+import {Forecastday} from "@/types/weather";
+
 export function celsiusToFahrenheit(celsius: number): number {
   return (celsius * 9) / 5 + 32;
 }
@@ -14,7 +16,7 @@ export function formatTemperature(temp: number, unit: 'C' | 'F'): string {
 
 export function getTemperatureGradient(tempCelsius: number): string {
   if (tempCelsius < 0) {
-    return 'bg-gradient-to-br from-temp-cold-start/75 to-temp-cold-end/75';
+    return 'bg-gradient-to-br from-temp-cold-start/85 to-temp-cold-end/85';
   } else if (tempCelsius < 10) {
     return 'bg-gradient-to-br from-temp-cool-start/75 to-temp-cool-end/75';
   } else if (tempCelsius < 20) {
@@ -58,4 +60,12 @@ export function formatDayName(date: Date): string {
   if (date.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
 
   return date.toLocaleDateString('en-US', { weekday: 'long', day: '2-digit' });
+}
+
+export const minMaxTempPerDay = (currentWeather: Forecastday) => {
+  const temps = currentWeather.hour.map((temp) => Math.floor(temp.temp_c));
+  return {
+    min: Math.min(...temps),
+    max: Math.max(...temps),
+  }
 }

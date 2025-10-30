@@ -117,7 +117,7 @@
     background-color: hsl(237 21% 34% / 0.5);
     backdrop-filter: blur(8px);
     border-radius: 0.75rem;
-    padding: 1rem;
+    /*padding: 1rem;*/
     border: 1px solid hsl(237 21% 40% / 0.5);
     transition: all 0.3s ease;
   }
