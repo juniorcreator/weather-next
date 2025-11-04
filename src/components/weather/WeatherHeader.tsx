@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Search, MapPin, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,18 +10,20 @@ interface WeatherHeaderProps {
   unit: 'C' | 'F';
   onToggleUnit: () => void;
   onLocationSelect: (lat: number, lon: number) => void;
+  onHandleKeyDown: (event: React.KeyboardEvent<HTMLInputElement>, value: string) => void;
+  onHandleFetchData: (value: string) => void;
 }
 
-export function WeatherHeader({ unit, onToggleUnit, onLocationSelect }: WeatherHeaderProps) {
+export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKeyDown, onHandleFetchData }: WeatherHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const { requestLocation, loading: geoLoading } = useGeolocation();
 
-  // const handleLocationSelect = (location: WeatherLocation) => {
-  //   onLocationSelect(location.lat, location.lon);
-  //   setSearchQuery('');
-  //   setShowResults(false);
-  // };
+  const handleLocationSelect = (location: any) => {
+    onLocationSelect(location.lat, location.lon);
+    setSearchQuery('');
+    setShowResults(false);
+  };
 
   const handleUseMyLocation = async () => {
     requestLocation();
@@ -31,7 +33,7 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect }: WeatherH
   return (
     <header className="flex items-center justify-center gap-4 p-4 border-b border-border/50">
       <div className="relative flex-1 max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search onClick={() => onHandleFetchData(searchQuery)} className="absolute h-full left-3 top-1/2 -translate-y-1/2 w-4 text-muted-foreground cursor-pointer" />
         <Input
           placeholder="Search location..."
           value={searchQuery}
@@ -39,6 +41,7 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect }: WeatherH
             setSearchQuery(e.target.value);
             setShowResults(true);
           }}
+          onKeyDown={(e) => onHandleKeyDown(e, searchQuery)}
           onFocus={() => setShowResults(true)}
           onBlur={() => setTimeout(() => setShowResults(false), 200)}
           className="pl-10 h-10 bg-card/50 border-border/50"
@@ -58,7 +61,8 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect }: WeatherH
           <MapPin className="h-4 w-4" />
         )}
       </Button>
-      <ToggleCF />
+      <ToggleCF unit={unit} onToggleUnit={onToggleUnit} />
+
 
       {/*<Button*/}
       {/*  variant="outline"*/}

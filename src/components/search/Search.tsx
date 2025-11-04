@@ -43,6 +43,12 @@ const Search = () => {
     setError("");
     // const data = await getCityWeatherSimple(city);
     const data: RootWeather = await getWeather(city);
+    console.log(data, ' data in handleFetchData');
+
+    if(data.error) {
+      setError(data.error.message);
+      return;
+    }
     getHoursInterval(data.forecast.forecastday[0].hour);
     // setBg(getAppleStyleTempColor(24));
     setBg(getAppleStyleTempColor(Math.floor(data.current.temp_c)));
@@ -52,15 +58,12 @@ const Search = () => {
       getAppleStyleTempColor(Math.floor(data.current.temp_c)),
     );
     console.log("data >>> client ", data);
-    if (!data) {
-      setError("City not found");
-    }
     setWeather(data);
   };
 
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, value: string) => {
     if (e.key === "Enter") {
-      await handleFetchData(city);
+      await handleFetchData(value);
     }
   };
 
@@ -88,6 +91,8 @@ const Search = () => {
         unit={unit}
         onToggleUnit={toggleUnit}
         onLocationSelect={() => {}}
+        onHandleKeyDown={handleKeyDown}
+        onHandleFetchData={handleFetchData}
       />
       {/*<div className="flex items-center gap-3">*/}
       {/*  <div className="relative max-w-[300px] w-full">*/}
@@ -116,7 +121,7 @@ const Search = () => {
           <div className="lg:col-span-12 flex">
             <CurrentWeatherCard
               weather={weather}
-              unit="C"
+              unit={unit}
               locationName={weather?.location.name}
             />
           </div>
@@ -134,7 +139,7 @@ const Search = () => {
 
         <HourlyForecast
           hourly={weather.forecast.forecastday[0].hour}
-          unit={"C"}
+          unit={unit}
         />
 
         <DailyForecast

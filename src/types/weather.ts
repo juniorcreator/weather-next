@@ -3,6 +3,10 @@ export interface RootWeather {
   current: Current;
   forecast: Forecast;
   alerts: Alerts;
+  error?: {
+    code: number;
+    message: string;
+  };
 }
 
 export interface Location {
