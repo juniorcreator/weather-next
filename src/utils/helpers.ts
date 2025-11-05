@@ -1,12 +1,4 @@
-import {Forecastday, Hour} from "@/types/weather";
-
-export const simpleGraph = (days: Forecastday[]) => {
-  const data = days.map((day) => {
-    return { max: day.day.maxtemp_c, min: day.day.mintemp_c };
-  });
-
-  return data;
-};
+import {Hour} from "@/types/weather";
 
 export const gbDefraIndex = (index: number): string => {
   const data: { [key: string]: string } = {
@@ -32,27 +24,8 @@ export const getHoursInterval = (hours: Hour[]) => {
     return allowedTimes.includes(timeHour);
   });
 
-  console.log(resultData, '<<< resultData');
   return resultData;
 }
-
-export const getHourRangeLine = (maxTemp: number, minTemp: number, temp: number
-): number => {
-  // Защита от деления на 0
-  if (maxTemp === minTemp) return 0;
-
-  // Обрезаем температуру в допустимые пределы
-  const clamped = Math.max(Math.min(temp, maxTemp), minTemp);
-
-  // Доля в диапазоне
-  const ratio = (clamped - minTemp) / (maxTemp - minTemp);
-
-  // Процент (0..100)
-  const percent = ratio * 100;
-
-  // Возвращаем целое (или можно вернуть Math.round(percent*100)/100 для двух знаков)
-  return Math.round(percent);
-};
 
 export function getClosestTimeIndex(target: string, times: Hour[]): number {
   const targetDate = new Date(target).getTime();
@@ -70,7 +43,3 @@ export function getClosestTimeIndex(target: string, times: Hour[]): number {
 
   return closestIndex; // вернёт индекс ближайшего
 };
-
-export function getWeatherIcon(url: string, size: 64 | 128 = 128): string {
-  return url.replace("64x64", `${size}x${size}`);
-}

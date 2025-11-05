@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, MapPin, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useGeolocation } from '@/hooks/useWeatherData';
 import ToggleCF from "@/components/ToggleCF";
-// import { WeatherLocation } from '@/lib/weatherAdapter';
+import { searchLocations } from '@/utils/api-weatherapi';
 
 interface WeatherHeaderProps {
   unit: 'C' | 'F';
@@ -15,42 +15,111 @@ interface WeatherHeaderProps {
   onHandleFetchDataByIP?: () => void;
 }
 
+interface LocationSuggestion {
+  id: number;
+  name: string;
+  region: string;
+  country: string;
+  lat: number;
+  lon: number;
+  url: string;
+}
+
 export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKeyDown, onHandleFetchData, onHandleFetchDataByIP }: WeatherHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
-  const [hasRequestedLocation, setHasRequestedLocation] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const { location, requestLocation, loading: geoLoading, error: geoError } = useGeolocation();
+  const userRequestedRef = useRef(false);
+  const locationProcessedRef = useRef(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleLocationSelect = (location: any) => {
-    onLocationSelect(location.lat, location.lon);
-    setSearchQuery('');
+  // Debounced search for autocomplete
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (searchQuery.trim().length < 2) {
+      setSuggestions([]);
+      setIsLoadingSuggestions(false);
+      return;
+    }
+
+    setIsLoadingSuggestions(true);
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const results = await searchLocations(searchQuery);
+        setSuggestions(results);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+        setSuggestions([]);
+      } finally {
+        setIsLoadingSuggestions(false);
+      }
+    }, 300); // 300ms debounce
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  const handleLocationSelect = (suggestion: LocationSuggestion) => {
+    onLocationSelect(suggestion.lat, suggestion.lon);
+    setSearchQuery(suggestion.name);
     setShowResults(false);
+    setSuggestions([]);
   };
 
+  const handleSuggestionClick = (suggestion: LocationSuggestion) => {
+    handleLocationSelect(suggestion);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleUseMyLocation = () => {
-    setHasRequestedLocation(true);
+    userRequestedRef.current = true;
+    locationProcessedRef.current = false;
     setShowError(false);
     requestLocation();
   };
 
   // When location is obtained from geolocation request (user clicked button), call onLocationSelect
   useEffect(() => {
-    if (location && hasRequestedLocation) {
+    if (location && userRequestedRef.current && !locationProcessedRef.current) {
+      locationProcessedRef.current = true;
       onLocationSelect(location.lat, location.lon);
-      setHasRequestedLocation(false);
       setShowError(false);
+      userRequestedRef.current = false;
     }
-  }, [location, hasRequestedLocation, onLocationSelect]);
+  }, [location, onLocationSelect]);
 
   // Show error when it occurs after user requested location, or try IP fallback
   useEffect(() => {
-    if (geoError && hasRequestedLocation && !geoLoading) {
+    if (geoError && userRequestedRef.current && !geoLoading) {
       // If error is IP_FALLBACK, try to use IP-based location
       if (geoError === 'IP_FALLBACK' && onHandleFetchDataByIP) {
         setShowError(false);
         onHandleFetchDataByIP();
-        setHasRequestedLocation(false);
+        userRequestedRef.current = false;
+        locationProcessedRef.current = false;
         return;
       }
       
@@ -58,45 +127,85 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
       // Auto-hide error after 5 seconds
       const timer = setTimeout(() => {
         setShowError(false);
-        setHasRequestedLocation(false);
+        userRequestedRef.current = false;
+        locationProcessedRef.current = false;
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [geoError, hasRequestedLocation, geoLoading, onHandleFetchDataByIP]);
+  }, [geoError, geoLoading, onHandleFetchDataByIP]);
 
   return (
     <header className="flex items-center justify-center gap-4 p-4 border-b border-border/50 relative">
-      <div className="relative flex-1 max-w-md">
-        <Search onClick={() => onHandleFetchData(searchQuery)} className="absolute h-full left-3 top-1/2 -translate-y-1/2 w-4 text-muted-foreground cursor-pointer" />
-        <Input
-          placeholder="Search location..."
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setShowResults(true);
-          }}
-          onKeyDown={(e) => onHandleKeyDown(e, searchQuery)}
-          onFocus={() => setShowResults(true)}
-          onBlur={() => setTimeout(() => setShowResults(false), 200)}
-          className="pl-10 h-10 bg-card/50 border-border/50"
-        />
-      </div>
+      <nav className="flex items-center justify-center gap-4 w-full" aria-label="Main navigation">
+        <div className="relative flex-1 max-w-md" ref={dropdownRef}>
+          <Search onClick={() => onHandleFetchData(searchQuery)} className="absolute h-full left-3 top-1/2 -translate-y-1/2 w-4 text-muted-foreground cursor-pointer z-10" />
+          <Input
+            placeholder="Search location..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setShowResults(true);
+            }}
+            onKeyDown={(e) => {
+              // Handle Enter key
+              if (e.key === 'Enter') {
+                onHandleKeyDown(e, searchQuery);
+                setShowResults(false);
+              }
+              // Handle Escape key
+              if (e.key === 'Escape') {
+                setShowResults(false);
+              }
+            }}
+            onFocus={() => {
+              if (suggestions.length > 0 || searchQuery.length >= 2) {
+                setShowResults(true);
+              }
+            }}
+            className="pl-10 h-10 bg-card/50 border-border/50"
+          />
+          
+          {/* Dropdown with suggestions */}
+          {showResults && (suggestions.length > 0 || isLoadingSuggestions) && (
+            <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50">
+              {isLoadingSuggestions ? (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin inline-block mr-2" />
+                  Searching...
+                </div>
+              ) : (
+                suggestions.map((suggestion) => (
+                  <button
+                    key={`${suggestion.lat}-${suggestion.lon}`}
+                    type="button"
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="w-full cursor-pointer text-left px-4 py-3 hover:bg-accent/50 hover:text-accent-foreground transition-all flex items-center gap-2 rounded-md"
+                  >
+                    <MapPin className="h-4 w-4 text-primary transition-colors" />
+                    <span>{suggestion.name}, {suggestion.country}</span>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+        </div>
 
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleUseMyLocation}
-        disabled={geoLoading}
-        className="shrink-0 cursor-pointer"
-        title={geoError || "Use my location"}
-      >
-        {geoLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <MapPin className="h-4 w-4" />
-        )}
-      </Button>
-      <ToggleCF unit={unit} onToggleUnit={onToggleUnit} />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleUseMyLocation}
+          disabled={geoLoading}
+          className="shrink-0 cursor-pointer"
+          title={geoError || "Use my location"}
+        >
+          {geoLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <MapPin className="h-4 w-4" />
+          )}
+        </Button>
+        <ToggleCF unit={unit} onToggleUnit={onToggleUnit} />
+      </nav>
       
       {/* Error message */}
       {showError && geoError && (
@@ -104,16 +213,6 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
           {geoError}
         </div>
       )}
-
-
-      {/*<Button*/}
-      {/*  variant="outline"*/}
-      {/*  size="sm"*/}
-      {/*  onClick={onToggleUnit}*/}
-      {/*  className="font-semibold cursor-pointer"*/}
-      {/*>*/}
-      {/*  °{unit}*/}
-      {/*</Button>*/}
     </header>
   );
 }

@@ -47,10 +47,6 @@ export function formatTime(date: Date): string {
   return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
-export function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-}
-
 export function formatDayName(date: Date): string {
   const today = new Date();
   const tomorrow = new Date(today);
@@ -60,12 +56,4 @@ export function formatDayName(date: Date): string {
   if (date.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
 
   return date.toLocaleDateString('en-US', { weekday: 'long', day: '2-digit' });
-}
-
-export const minMaxTempPerDay = (currentWeather: Forecastday) => {
-  const temps = currentWeather.hour.map((temp) => Math.floor(temp.temp_c));
-  return {
-    min: Math.min(...temps),
-    max: Math.max(...temps),
-  }
 }

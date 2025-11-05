@@ -1,22 +1,14 @@
 "use client";
 
-import { MapPin, Search as SearchIcon } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { MapPin } from "lucide-react";
+import React, { useEffect, useState, Suspense } from "react";
+import dynamic from 'next/dynamic';
 import { getWeather, getWeatherByIP } from "@/utils/api-weatherapi";
 import { Forecastday, RootWeather } from "@/types/weather";
-import AllIcons from "@/components/Icons";
-import { getAppleStyleTempColor, lighten } from "@/utils/colorByTems";
+import { getAppleStyleTempColor } from "@/utils/colorByTems";
 import {
-  gbDefraIndex,
   getHoursInterval,
-  getWeatherIcon,
 } from "@/utils/helpers";
-import ToggleCF from "@/components/ToggleCF";
-import DayDetails from "@/components/DayDetails";
-import SunDetails from "@/components/SunDetails";
-import SevenDaysItems from "@/components/SevenDaysItems";
-import HourlyDetails from "@/components/HourlyDetails";
-import SevenDayItem from "@/components/SevenDayItem";
 import { WeatherHeader } from "@/components/weather/WeatherHeader";
 import { CurrentWeatherCard } from "@/components/weather/CurrentWeatherCard";
 import { MetricsGrid } from "@/components/ui/MetricsGrid";
@@ -24,11 +16,17 @@ import { SunriseSunset } from "@/components/ui/SunriseSunset";
 import { HourlyForecast } from "@/components/HourlyForecast";
 import { DailyForecast } from "@/components/DailyForecast";
 import { useTemperatureUnit } from "@/hooks/useWeatherData";
-import {DayDetailView} from "@/components/DayDetailView";
-import {PollenAirQuality} from "@/components/PollenAirQuality";
+
+// Dynamic imports for components below fold
+const DayDetailView = dynamic(() => import('@/components/DayDetailView').then(mod => ({ default: mod.DayDetailView })), {
+  loading: () => <div className="weather-card bg-card/50 p-6 border border-border/50">Loading day details...</div>,
+});
+
+const PollenAirQuality = dynamic(() => import('@/components/PollenAirQuality').then(mod => ({ default: mod.PollenAirQuality })), {
+  loading: () => <div className="weather-card bg-card/50 p-6 border border-border/50">Loading air quality data...</div>,
+});
 
 const Search = () => {
-  const [city, setCity] = useState("");
   const { unit, toggleUnit } = useTemperatureUnit();
   const [selectedDay, setSelectedDay] = useState<Forecastday | null>(null);
   const [error, setError] = useState("");
@@ -52,21 +50,41 @@ const Search = () => {
     
     // const data = await getCityWeatherSimple(city);
     const data: RootWeather = await getWeather(city);
-    console.log(data, ' data in handleFetchData');
 
     if(data.error) {
       setError(data.error.message);
       return;
     }
+    
+    // Save location to localStorage after successful fetch
+    try {
+      const locationData: {
+        cityName?: string;
+        lat?: number;
+        lon?: number;
+      } = {};
+      
+      // Save city name
+      if (data.location?.name) {
+        locationData.cityName = data.location.name;
+      }
+      
+      // Save coordinates if available
+      if (data.location?.lat && data.location?.lon) {
+        locationData.lat = data.location.lat;
+        locationData.lon = data.location.lon;
+      }
+      
+      localStorage.setItem('weather-location', JSON.stringify(locationData));
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to save location to localStorage:', err);
+      }
+    }
+    
     getHoursInterval(data.forecast.forecastday[0].hour);
     // setBg(getAppleStyleTempColor(24));
     setBg(getAppleStyleTempColor(Math.floor(data.current.temp_c)));
-
-    console.log(
-      "getTemperatureColor >> ",
-      getAppleStyleTempColor(Math.floor(data.current.temp_c)),
-    );
-    console.log("data >>> client ", data);
     setWeather(data);
   };
 
@@ -78,7 +96,6 @@ const Search = () => {
     // Format coordinates as "lat,lon" for WeatherAPI.com
     const query = `${lat},${lon}`;
     const data: RootWeather = await getWeather(query);
-    console.log(data, ' data in handleFetchDataByLocation');
 
     if(data.error) {
       setError(data.error.message);
@@ -87,19 +104,29 @@ const Search = () => {
     
     // Save location to localStorage after successful fetch
     try {
-      localStorage.setItem('weather-location', JSON.stringify({ lat, lon }));
+      const locationData: {
+        cityName?: string;
+        lat?: number;
+        lon?: number;
+      } = {
+        lat,
+        lon,
+      };
+      
+      // Save city name from API response
+      if (data.location?.name) {
+        locationData.cityName = data.location.name;
+      }
+      
+      localStorage.setItem('weather-location', JSON.stringify(locationData));
     } catch (err) {
-      console.error('Failed to save location to localStorage:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to save location to localStorage:', err);
+      }
     }
     
     getHoursInterval(data.forecast.forecastday[0].hour);
     setBg(getAppleStyleTempColor(Math.floor(data.current.temp_c)));
-
-    console.log(
-      "getTemperatureColor >> ",
-      getAppleStyleTempColor(Math.floor(data.current.temp_c)),
-    );
-    console.log("data >>> client ", data);
     setWeather(data);
   };
 
@@ -110,7 +137,6 @@ const Search = () => {
     
     try {
       const data: RootWeather = await getWeatherByIP();
-      console.log(data, ' data in handleFetchDataByIP');
 
       if(data.error) {
         setError(data.error.message);
@@ -120,26 +146,35 @@ const Search = () => {
       // Save location to localStorage after successful fetch
       if (data.location?.lat && data.location?.lon) {
         try {
-          localStorage.setItem('weather-location', JSON.stringify({ 
-            lat: data.location.lat, 
-            lon: data.location.lon 
-          }));
+          const locationData: {
+            cityName?: string;
+            lat?: number;
+            lon?: number;
+          } = {
+            lat: data.location.lat,
+            lon: data.location.lon,
+          };
+          
+          // Save city name from API response
+          if (data.location?.name) {
+            locationData.cityName = data.location.name;
+          }
+          
+          localStorage.setItem('weather-location', JSON.stringify(locationData));
         } catch (err) {
-          console.error('Failed to save location to localStorage:', err);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Failed to save location to localStorage:', err);
+          }
         }
       }
       
       getHoursInterval(data.forecast.forecastday[0].hour);
       setBg(getAppleStyleTempColor(Math.floor(data.current.temp_c)));
-
-      console.log(
-        "getTemperatureColor >> ",
-        getAppleStyleTempColor(Math.floor(data.current.temp_c)),
-      );
-      console.log("data >>> client ", data);
       setWeather(data);
     } catch (err) {
-      console.error('Failed to fetch weather by IP:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to fetch weather by IP:', err);
+      }
       setError('Failed to determine your location. Please search for a city instead.');
     }
   };
@@ -157,14 +192,23 @@ const Search = () => {
         const saved = localStorage.getItem('weather-location');
         if (saved) {
           const parsed = JSON.parse(saved);
+          
+          // If coordinates are available, use them (more accurate)
           if (parsed.lat && parsed.lon) {
-            // Load weather by saved coordinates
             await handleFetchDataByLocation(parsed.lat, parsed.lon);
+            return;
+          }
+          
+          // If only city name is available, use it
+          if (parsed.cityName) {
+            await handleFetchData(parsed.cityName);
             return;
           }
         }
       } catch (err) {
-        console.error('Failed to load saved location:', err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to load saved location:', err);
+        }
       }
       
       // Fallback to default city if no saved location
@@ -198,6 +242,7 @@ const Search = () => {
   if (!weather) {
     return <h2>loading...</h2>;
   }
+  console.log(weather, 'weather');
 
   return (
     <>
@@ -214,6 +259,7 @@ const Search = () => {
 
       {/*{error && <div className="text-center">{error}</div>}*/}
       <main className="container mx-auto p-6 space-y-6 max-w-5xl">
+        <h1 className="sr-only">Weather Forecast Application</h1>
         <div className="grid lg:grid-cols-20 gap-3 lg:items-stretch">
           <div className="lg:col-span-12 flex">
             <CurrentWeatherCard
@@ -248,14 +294,18 @@ const Search = () => {
         />
 
         {selectedDay && weather && (
-          <DayDetailView
-            key={`${weather.location.name}-${selectedDay.date}`}
-            day={selectedDay}
-            unit={unit}
-          />
+          <Suspense fallback={<div className="weather-card bg-card/50 p-6 border border-border/50">Loading day details...</div>}>
+            <DayDetailView
+              key={`${weather.location.name}-${selectedDay.date}`}
+              day={selectedDay}
+              unit={unit}
+            />
+          </Suspense>
         )}
 
-        <PollenAirQuality pollen={weather.current.pollen} airQuality={weather.current.air_quality} />
+        <Suspense fallback={<div className="weather-card bg-card/50 p-6 border border-border/50">Loading air quality data...</div>}>
+          <PollenAirQuality pollen={weather.current.pollen} airQuality={weather.current.air_quality} />
+        </Suspense>
 
         <div className="text-center text-xs text-muted-foreground py-4">
           Last updated: {weather.current.last_updated.toLocaleString()}

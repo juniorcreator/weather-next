@@ -68,16 +68,3 @@ export function getAppleStyleTempColor(temp: number): string {
   // запасной вариант
   return "#000000";
 }
-
-export function lighten(hex: string, percent: number) {
-  const num = parseInt(hex.replace("#", ""), 16);
-  let r = (num >> 16) + Math.round(255 * (percent / 100));
-  let g = ((num >> 8) & 0x00ff) + Math.round(255 * (percent / 100));
-  let b = (num & 0x0000ff) + Math.round(255 * (percent / 100));
-
-  r = Math.min(255, r);
-  g = Math.min(255, g);
-  b = Math.min(255, b);
-
-  return "#" + ((r << 16) | (g << 8) | b).toString(16).padStart(6, "0");
-}

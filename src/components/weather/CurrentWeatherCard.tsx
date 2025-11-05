@@ -5,7 +5,6 @@ import {
   getTemperatureGradient,
   formatTime,
   getWeatherIconCode,
-  minMaxTempPerDay
 } from '@/lib/temperatureUtils';
 import {RootWeather} from "@/types/weather";
 

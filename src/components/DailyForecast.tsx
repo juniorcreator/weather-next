@@ -1,6 +1,8 @@
 // import { DailyForecast as DailyData } from '@/lib/weatherAdapter';
 import { formatDayName, formatTemperature, getWeatherIconCode } from '@/lib/temperatureUtils';
 import {Forecastday} from "@/types/weather";
+import Image from 'next/image';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface DailyForecastProps {
   daily: Forecastday[];
@@ -15,14 +17,12 @@ export function DailyForecast({ daily, unit, onDayClick, selectedDay }: DailyFor
       <h3 className="text-xl font-bold mb-5">6-Day Forecast</h3>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
-        {daily.slice(1).map((day, index) => {
+        {daily.slice(1).map((day) => {
           const isSelected = selectedDay?.date === day.date;
-          // console.log(isSelected, ' isSelected');
-          console.log(selectedDay?.date, ' ',  day.date);
 
           return (
             <button
-              key={index}
+              key={day.date}
               onClick={() => onDayClick(day)}
               className={`bg-muted/30 rounded-lg p-4 text-center transition-all hover:bg-muted/90 hover:scale-103 border border-border/30 cursor-pointer ${
                 isSelected ? 'ring-2 ring-primary bg-muted/90 scale-105' : ''
@@ -33,7 +33,14 @@ export function DailyForecast({ daily, unit, onDayClick, selectedDay }: DailyFor
               </div>
 
               <div className="text-5xl my-3 flex justify-center">
-                <img className="size-14" src={day.day.condition.icon} alt="Dai weather icon"/>
+                <Image 
+                  className="size-14" 
+                  src={normalizeImageUrl(day.day.condition.icon)} 
+                  alt={`${day.day.condition.text} weather icon`}
+                  width={56}
+                  height={56}
+                  loading="lazy"
+                />
                 {/*{getWeatherIconCode(day.day.condition.code)}*/}
               </div>
 

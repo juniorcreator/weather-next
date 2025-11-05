@@ -1,6 +1,5 @@
 // import { DailyForecast } from '@/lib/weatherAdapter';
 import {
-  formatDate,
   formatTemperature,
   getWeatherIconCode,
   formatTime,
@@ -10,6 +9,8 @@ import { Forecastday, Hour } from "@/types/weather";
 import { usEpaIndexText } from "@/utils/airQuality";
 import { useMemo } from "react";
 import { TempCenterBar } from "@/components/TempCenterBar";
+import Image from 'next/image';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface DayDetailViewProps {
   day: Forecastday;
@@ -109,13 +110,20 @@ export function DayDetailView({ day, unit }: DayDetailViewProps) {
                   {group.period}
                 </h5>
                 <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
-                  {group.hours.map((hour, index) => (
-                    <div key={index} className="bg-muted/40 flex-1 rounded-lg p-3 text-center">
+                  {group.hours.map((hour) => (
+                    <div key={hour.time} className="bg-muted/40 flex-1 rounded-lg p-3 text-center">
                       <div className="text-xs font-medium mb-1">
                         {formatTime(new Date(hour.time))}
                       </div>
                       <div className="text-2xl my-1 flex justify-center">
-                        <img className="size-11" src={hour.condition.icon} alt="Hourly weather icon"/>
+                        <Image 
+                          className="size-11" 
+                          src={normalizeImageUrl(hour.condition.icon)} 
+                          alt={`${hour.condition.text} weather icon`}
+                          width={44}
+                          height={44}
+                          loading="lazy"
+                        />
                         {/*{getWeatherIconCode(hour.condition.code)}*/}
                       </div>
                       <div className="text-xs font-semibold mb-1">

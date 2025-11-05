@@ -18,7 +18,9 @@ export function useGeolocation() {
         }
       }
     } catch (err) {
-      console.error('Failed to load saved location:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to load saved location:', err);
+      }
     }
   }, []);
 
@@ -36,7 +38,7 @@ export function useGeolocation() {
     // Using softer options to avoid CoreLocation errors on macOS/Safari
     const geoOptions: PositionOptions = {
       enableHighAccuracy: false, // Don't require GPS, use network-based location
-      timeout: 20000, // 20 seconds - longer timeout to avoid premature failures
+      timeout: 10000, // 10 seconds - reduced timeout to fail faster and use IP fallback
       maximumAge: 300000, // Accept location cached up to 5 minutes (reduces requests)
     };
 
@@ -53,56 +55,42 @@ export function useGeolocation() {
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(coords));
         } catch (err) {
-          console.error('Failed to save location to localStorage:', err);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Failed to save location to localStorage:', err);
+          }
         }
         
         setLoading(false);
       },
       (err: GeolocationPositionError) => {
-        // Silently handle kCLErrorLocationUnknown - it's a browser/system warning
-        // that doesn't affect functionality when we have IP fallback
-        const isLocationUnknown = err.message?.includes('location unknown') || 
-                                   err.message?.includes('kCLErrorLocationUnknown') ||
-                                   err.code === 2; // POSITION_UNAVAILABLE
-        
-        let errorMessage = 'Failed to get location';
+        // Handle kCLErrorLocationUnknown - it's a browser/system warning that can occur
+        // Check error message first, then error code
+        const errorMessageLower = err.message?.toLowerCase() || '';
+        const isLocationUnknown = errorMessageLower.includes('location unknown') || 
+                                   errorMessageLower.includes('kclerrorlocationunknown');
         
         // Error codes: 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
-        switch (err.code) {
-          case 1: // PERMISSION_DENIED
-            errorMessage = 'Location access denied. Please enable location permissions in your browser settings.';
-            console.warn('Geolocation permission denied:', err.message);
-            break;
-          case 2: // POSITION_UNAVAILABLE
-            errorMessage = 'Location information is unavailable. Trying to use IP-based location...';
-            // Don't log - this triggers IP fallback which works fine
-            break;
-          case 3: // TIMEOUT
-            errorMessage = 'Location request timed out. Trying to use IP-based location...';
-            // Don't log - this triggers IP fallback which works fine
-            break;
-          default:
-            // Handle specific error messages
-            if (err.message) {
-              if (isLocationUnknown) {
-                errorMessage = 'Unable to determine your location. Trying to use IP-based location...';
-                // Don't log - this is expected and handled by IP fallback
-              } else {
-                errorMessage = err.message;
-                // Only log non-expected errors
-                if (!err.message.includes('kCLErrorLocationUnknown')) {
-                  console.warn('Geolocation error:', err.message);
-                }
-              }
-            }
+        // For kCLErrorLocationUnknown (often appears as console warning but doesn't block),
+        // treat as POSITION_UNAVAILABLE and use IP fallback
+        if (isLocationUnknown || err.code === 2 || err.code === 3) {
+          // Set IP_FALLBACK flag to trigger IP-based location
+          setError('IP_FALLBACK');
+          setLoading(false);
+          return;
         }
         
-        // For POSITION_UNAVAILABLE and TIMEOUT, set a special flag for IP fallback
-        if (err.code === 2 || err.code === 3 || isLocationUnknown) {
-          setError('IP_FALLBACK'); // Special flag to trigger IP-based location
-        } else {
-          setError(errorMessage);
+        // Handle permission denied separately
+        if (err.code === 1) {
+          setError('Location access denied. Please enable location permissions in your browser settings.');
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Geolocation permission denied:', err.message);
+          }
+          setLoading(false);
+          return;
         }
+        
+        // For any other error, set error message
+        setError(err.message || 'Failed to get location');
         setLoading(false);
       },
       geoOptions
@@ -114,7 +102,9 @@ export function useGeolocation() {
       localStorage.removeItem(STORAGE_KEY);
       setLocation(null);
     } catch (err) {
-      console.error('Failed to clear saved location:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to clear saved location:', err);
+      }
     }
   };
 

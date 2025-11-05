@@ -6,8 +6,9 @@ import { Wind, Droplets } from 'lucide-react';
 import { Hour } from "@/types/weather";
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { getClosestTimeIndex } from '@/utils/helpers';
-import { TemperatureRangeBar } from '@/components/TemperatureRangeBar';
 import { TempCenterBar } from '@/components/TempCenterBar';
+import Image from 'next/image';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface HourlyForecastProps {
   hourly: Hour[];
@@ -168,7 +169,7 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
 
                 return (
                   <div
-                    key={index}
+                    key={hour.time}
                     data-hour-id={hourId}
                     className={`bg-muted/30 flex-1 min-w-23 rounded-lg p-3 text-center hover:bg-muted/50 transition-all flex flex-col border border-border/30 snap-start ${
                       isActive ? 'bg-muted/50 ring-2 ring-primary/50' : ''
@@ -177,7 +178,14 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
                     <div className="text-sm font-bold mb-2">{formatTime(new Date(hour.time))}</div>
 
                     <div className="text-4xl my-2 flex justify-center">
-                      <img className="size-12" src={hour.condition.icon} alt="weather hourly icon"/>
+                      <Image 
+                        className="size-12" 
+                        src={normalizeImageUrl(hour.condition.icon)} 
+                        alt={`${hour.condition.text} weather icon`}
+                        width={48}
+                        height={48}
+                        loading="lazy"
+                      />
                       {/*{getWeatherIconCode(hour.condition.code)}*/}
                     </div>
 
