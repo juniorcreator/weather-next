@@ -43,11 +43,11 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
   return (
     <div className={`weather-card ${gradientClass} p-4 px-5 text-white shadow-2xl relative overflow-hidden h-full w-full`}>
       <div className="relative z-10">
-        <h2 className="text-2xl font-bold mb-3 drop-shadow-lg tracking-tight">{locationName}, {weather.location.country}</h2>
+        <h2 className="text-xl sm:text-2xl font-bold mb-3 drop-shadow-lg tracking-tight">{locationName}, {weather.location.country}</h2>
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-7xl font-bold mb-3 drop-shadow-2xl leading-none tracking-tighter">
+            <h1 className="text-6xl sm:text-7xl font-bold mb-3 drop-shadow-2xl leading-none tracking-tighter">
               {formatTemperature(weather.current.temp_c, unit)}
             </h1>
 
@@ -81,7 +81,7 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
             </div>
           </div>
 
-          <div className="text-9xl opacity-70">
+          <div className="text-8xl sm:text-9xl opacity-70">
             {/*<img className="size-35" src={weather.current.condition.icon} alt="Current weather icon"/>*/}
             {weatherIcon}
           </div>
@@ -97,7 +97,7 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
         </div>
       </div>
 
-      <div className="absolute bottom-0 right-0 w-72 h-72 opacity-10">
+      <div className="absolute left-1/4  bottom-0 sm:right-0 sm:left-auto w-50 sm:w-72 h-50 sm:h-72 opacity-10">
         <Cloud className="w-full h-full" />
       </div>
     </div>

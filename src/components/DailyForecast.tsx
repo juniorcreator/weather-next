@@ -13,7 +13,7 @@ interface DailyForecastProps {
 
 export function DailyForecast({ daily, unit, onDayClick, selectedDay }: DailyForecastProps) {
   return (
-    <div className="weather-card bg-card/50 p-6 border border-border/50">
+    <div className="weather-card bg-card/50 px-6 py-3 border border-border/50">
       <h3 className="text-xl font-bold mb-5">6-Day Forecast</h3>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">

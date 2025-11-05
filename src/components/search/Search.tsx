@@ -239,8 +239,13 @@ const Search = () => {
     }
   }, [weather]);
 
+  // Prevent hydration mismatch by ensuring consistent initial render
   if (!weather) {
-    return <h2>loading...</h2>;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <h2 className="text-foreground">loading...</h2>
+      </div>
+    );
   }
   console.log(weather, 'weather');
 
@@ -258,7 +263,7 @@ const Search = () => {
       {/*search and settings*/}
 
       {/*{error && <div className="text-center">{error}</div>}*/}
-      <main className="container mx-auto p-6 space-y-6 max-w-5xl">
+      <main className="container mx-auto p-4 sm:p-6 space-y-6 max-w-5xl">
         <h1 className="sr-only">Weather Forecast Application</h1>
         <div className="grid lg:grid-cols-20 gap-3 lg:items-stretch">
           <div className="lg:col-span-12 flex">

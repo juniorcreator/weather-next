@@ -113,21 +113,29 @@ export function useGeolocation() {
 
 export function useTemperatureUnit() {
   const [unit, setUnit] = useState<'C' | 'F'>('C');
+  const [mounted, setMounted] = useState(false);
 
   const toggleUnit = () => {
     setUnit((current) => {
       const newUnit = current === 'C' ? 'F' : 'C';
-      localStorage.setItem('temperature-unit', newUnit);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('temperature-unit', newUnit);
+      }
       return newUnit;
     });
   };
 
   useEffect(() => {
-    const saved = window.localStorage.getItem('temperature-unit');
-    setUnit((saved === 'F' ? 'F' : 'C') as 'C' | 'F')
+    setMounted(true);
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('temperature-unit');
+      if (saved === 'F' || saved === 'C') {
+        setUnit(saved);
+      }
+    }
   }, [])
 
-  return { unit, toggleUnit };
+  return { unit, toggleUnit, mounted };
 }
 
 

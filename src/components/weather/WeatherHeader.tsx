@@ -136,8 +136,8 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
 
   return (
     <header className="flex items-center justify-center gap-4 p-4 border-b border-border/50 relative">
-      <nav className="flex items-center justify-center gap-4 w-full" aria-label="Main navigation">
-        <div className="relative flex-1 max-w-md" ref={dropdownRef}>
+      <nav className="flex flex-wrap items-center justify-center gap-4 w-full" aria-label="Main navigation">
+        <div className="w-full order-1 sm:order-0 relative sm:flex-1 sm:max-w-md" ref={dropdownRef}>
           <Search onClick={() => onHandleFetchData(searchQuery)} className="absolute h-full left-3 top-1/2 -translate-y-1/2 w-4 text-muted-foreground cursor-pointer z-10" />
           <Input
             placeholder="Search location..."

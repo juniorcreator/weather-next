@@ -148,8 +148,8 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
   }, [closestHourInfo]);
 
   return (
-    <div className="weather-card bg-card/50 p-6 border border-border/50">
-      <h3 className="text-xl font-bold mb-5">Today's 24-Hour Forecast</h3>
+    <div className="weather-card bg-card/50 px-6 py-3 border border-border/50">
+      <h3 className="text-xl font-bold mb-5">Hourly Forecast</h3>
 
       <div 
         ref={scrollContainerRef}
@@ -175,9 +175,9 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
                       isActive ? 'bg-muted/50 ring-2 ring-primary/50' : ''
                     }`}
                   >
-                    <div className="text-sm font-bold mb-2">{formatTime(new Date(hour.time))}</div>
+                    <div className="text-sm font-bold">{formatTime(new Date(hour.time))}</div>
 
-                    <div className="text-4xl my-2 flex justify-center">
+                    <div className="text-4xl flex justify-center">
                       <Image 
                         className="size-12" 
                         src={normalizeImageUrl(hour.condition.icon)} 
@@ -193,7 +193,7 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
                       {formatTemperature(hour.temp_c, unit).replace('°C', '°').replace('°F', '°')}
                     </div>
 
-                    <div className="space-y-1.5 text-xs font-medium text-muted-foreground">
+                    <div className="space-y-1.5 text-sm font-medium text-muted-foreground">
                       <div title="Rain %" className="flex items-center justify-center gap-1">
                         {/*<span className="text-xs">rain</span>*/}
                         <Droplets className="h-3 w-3" />

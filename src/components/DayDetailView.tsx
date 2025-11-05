@@ -112,7 +112,7 @@ export function DayDetailView({ day, unit }: DayDetailViewProps) {
                 <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
                   {group.hours.map((hour) => (
                     <div key={hour.time} className="bg-muted/40 flex-1 rounded-lg p-3 text-center">
-                      <div className="text-xs font-medium mb-1">
+                      <div className="text-sm font-bold mb-1">
                         {formatTime(new Date(hour.time))}
                       </div>
                       <div className="text-2xl my-1 flex justify-center">
@@ -126,10 +126,10 @@ export function DayDetailView({ day, unit }: DayDetailViewProps) {
                         />
                         {/*{getWeatherIconCode(hour.condition.code)}*/}
                       </div>
-                      <div className="text-xs font-semibold mb-1">
+                      <div className="font-black text-xl mb-1">
                         {formatTemperature(hour.temp_c, unit)}°
                       </div>
-                      <div className="text-xs text-muted-foreground space-y-0.5">
+                      <div className="text-sm font-medium text-muted-foreground space-y-0.5">
                         <div
                           title="Chance of rain %"
                           className="flex items-center justify-center gap-1"
