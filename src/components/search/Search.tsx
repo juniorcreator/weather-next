@@ -2,7 +2,7 @@
 
 import { MapPin, Search as SearchIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { getWeather } from "@/utils/api-weatherapi";
+import { getWeather, getWeatherByIP } from "@/utils/api-weatherapi";
 import { Forecastday, RootWeather } from "@/types/weather";
 import AllIcons from "@/components/Icons";
 import { getAppleStyleTempColor, lighten } from "@/utils/colorByTems";
@@ -40,7 +40,16 @@ const Search = () => {
       setError("Enter city name");
       return;
     }
+    
+    // Optimize: skip API call if same city is searched
+    if (weather?.location.name?.toLowerCase() === city.toLowerCase()) {
+      return;
+    }
+    
     setError("");
+    // Reset selectedDay before fetching new data to ensure DayDetailView gets fresh data
+    setSelectedDay(null);
+    
     // const data = await getCityWeatherSimple(city);
     const data: RootWeather = await getWeather(city);
     console.log(data, ' data in handleFetchData');
@@ -61,24 +70,130 @@ const Search = () => {
     setWeather(data);
   };
 
+  const handleFetchDataByLocation = async (lat: number, lon: number) => {
+    setError("");
+    // Reset selectedDay before fetching new data
+    setSelectedDay(null);
+    
+    // Format coordinates as "lat,lon" for WeatherAPI.com
+    const query = `${lat},${lon}`;
+    const data: RootWeather = await getWeather(query);
+    console.log(data, ' data in handleFetchDataByLocation');
+
+    if(data.error) {
+      setError(data.error.message);
+      return;
+    }
+    
+    // Save location to localStorage after successful fetch
+    try {
+      localStorage.setItem('weather-location', JSON.stringify({ lat, lon }));
+    } catch (err) {
+      console.error('Failed to save location to localStorage:', err);
+    }
+    
+    getHoursInterval(data.forecast.forecastday[0].hour);
+    setBg(getAppleStyleTempColor(Math.floor(data.current.temp_c)));
+
+    console.log(
+      "getTemperatureColor >> ",
+      getAppleStyleTempColor(Math.floor(data.current.temp_c)),
+    );
+    console.log("data >>> client ", data);
+    setWeather(data);
+  };
+
+  const handleFetchDataByIP = async () => {
+    setError("");
+    // Reset selectedDay before fetching new data
+    setSelectedDay(null);
+    
+    try {
+      const data: RootWeather = await getWeatherByIP();
+      console.log(data, ' data in handleFetchDataByIP');
+
+      if(data.error) {
+        setError(data.error.message);
+        return;
+      }
+      
+      // Save location to localStorage after successful fetch
+      if (data.location?.lat && data.location?.lon) {
+        try {
+          localStorage.setItem('weather-location', JSON.stringify({ 
+            lat: data.location.lat, 
+            lon: data.location.lon 
+          }));
+        } catch (err) {
+          console.error('Failed to save location to localStorage:', err);
+        }
+      }
+      
+      getHoursInterval(data.forecast.forecastday[0].hour);
+      setBg(getAppleStyleTempColor(Math.floor(data.current.temp_c)));
+
+      console.log(
+        "getTemperatureColor >> ",
+        getAppleStyleTempColor(Math.floor(data.current.temp_c)),
+      );
+      console.log("data >>> client ", data);
+      setWeather(data);
+    } catch (err) {
+      console.error('Failed to fetch weather by IP:', err);
+      setError('Failed to determine your location. Please search for a city instead.');
+    }
+  };
+
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, value: string) => {
     if (e.key === "Enter") {
       await handleFetchData(value);
     }
   };
 
+  // Check localStorage for saved location on mount
   useEffect(() => {
-    (async function () {
-      await handleFetchData("cherkasy");
-    })();
-  }, []);
+    const loadSavedLocation = async () => {
+      try {
+        const saved = localStorage.getItem('weather-location');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.lat && parsed.lon) {
+            // Load weather by saved coordinates
+            await handleFetchDataByLocation(parsed.lat, parsed.lon);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load saved location:', err);
+      }
+      
+      // Fallback to default city if no saved location
+      await handleFetchData("New York");
+    };
+    
+    loadSavedLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   useEffect(() => {
-    if (weather?.forecast.forecastday && !selectedDay) {
-      console.log("if if useEffect");
-      setSelectedDay(weather?.forecast.forecastday[1]);
+    if (weather?.forecast.forecastday) {
+      // Always check if selectedDay belongs to current weather data
+      if (!selectedDay) {
+        // If no selectedDay, set it to second day
+        setSelectedDay(weather.forecast.forecastday[1]);
+      } else {
+        // Check if selectedDay belongs to current weather by comparing dates
+        const dayExistsInCurrentWeather = weather.forecast.forecastday.some(
+          day => day.date === selectedDay.date
+        );
+        
+        // If selectedDay doesn't belong to current weather, update it
+        if (!dayExistsInCurrentWeather) {
+          setSelectedDay(weather.forecast.forecastday[1]);
+        }
+      }
     }
-  }, [weather, selectedDay]);
+  }, [weather]);
 
   if (!weather) {
     return <h2>loading...</h2>;
@@ -90,29 +205,11 @@ const Search = () => {
       <WeatherHeader
         unit={unit}
         onToggleUnit={toggleUnit}
-        onLocationSelect={() => {}}
+        onLocationSelect={handleFetchDataByLocation}
         onHandleKeyDown={handleKeyDown}
         onHandleFetchData={handleFetchData}
+        onHandleFetchDataByIP={handleFetchDataByIP}
       />
-      {/*<div className="flex items-center gap-3">*/}
-      {/*  <div className="relative max-w-[300px] w-full">*/}
-      {/*    <SearchIcon*/}
-      {/*      onClick={() => handleFetchData(city)}*/}
-      {/*      className="absolute cursor-pointer hover:scale-110 inset-x-0 size-5 left-2 top-1.5 text-white/80"*/}
-      {/*    />*/}
-      {/*    <input*/}
-      {/*      type="text"*/}
-      {/*      onKeyDown={handleKeyDown}*/}
-      {/*      onChange={(e) => setCity(e.target.value)}*/}
-      {/*      placeholder="Search location..."*/}
-      {/*      className="rounded-[10px] bg-c2 text-white border border-c2/60 outline-none focus:border-c4 py-1 pl-8 pr-2 w-full"*/}
-      {/*    />*/}
-      {/*  </div>*/}
-      {/*  <div className="cursor-pointer p-2 bg-black border-c2 rounded-[10px] hover:bg-c4 hover:text-black border">*/}
-      {/*    <MapPin className="size-4" />*/}
-      {/*  </div>*/}
-      {/*  <ToggleCF />*/}
-      {/*</div>*/}
       {/*search and settings*/}
 
       {/*{error && <div className="text-center">{error}</div>}*/}
@@ -140,6 +237,7 @@ const Search = () => {
         <HourlyForecast
           hourly={weather.forecast.forecastday[0].hour}
           unit={unit}
+          localtime={weather.location.localtime}
         />
 
         <DailyForecast
@@ -149,8 +247,9 @@ const Search = () => {
           selectedDay={selectedDay || undefined}
         />
 
-        {selectedDay && (
+        {selectedDay && weather && (
           <DayDetailView
+            key={`${weather.location.name}-${selectedDay.date}`}
             day={selectedDay}
             unit={unit}
           />
@@ -161,92 +260,11 @@ const Search = () => {
         <div className="text-center text-xs text-muted-foreground py-4">
           Last updated: {weather.current.last_updated.toLocaleString()}
         </div>
+
+        <footer className="text-center text-xs text-muted-foreground py-6 border-t border-border/50 mt-8">
+          <p>&copy; {new Date().getFullYear()} Weather App. All rights reserved.</p>
+        </footer>
       </main>
-
-      {/*{weather && (*/}
-      {/*  <div>*/}
-      {/*    /!*header *!/*/}
-      {/*    <p className="text-white/85 text-1xl font-bold mt-4">*/}
-      {/*      Current weather*/}
-      {/*    </p>*/}
-      {/*    <div className="flex items-start mt-2 mb-2 gap-5">*/}
-      {/*      <div*/}
-      {/*        className={`flex flex-1 items-center relative justify-between p-4 py-4 w-120 rounded-[10px]`}*/}
-      {/*      >*/}
-      {/*        <div*/}
-      {/*          className="absolute left-0 top-0 w-full h-full rounded-[10px]  z-[-1] transition-all duration-150 opacity-80"*/}
-      {/*          style={{*/}
-      {/*            background: `linear-gradient(to bottom right, ${bg} 50%, ${lighten(bg, 20)} 70%)`,*/}
-      {/*          }}*/}
-      {/*        ></div>*/}
-      {/*        <div className="weather-details w-2/3 text-white/85">*/}
-      {/*          <div className="text-lg font-bold ">*/}
-      {/*            <div>*/}
-      {/*              {weather.location.name}, {weather.location.country}*/}
-      {/*            </div>*/}
-      {/*          </div>*/}
-      {/*          <h2 className="text-8xl font-extrabold ">*/}
-      {/*            {Math.floor(weather.current.temp_c)}°*/}
-      {/*            <span className="text-7xl">C</span>*/}
-      {/*          </h2>*/}
-      {/*          <div className="text-lg font-bold ">*/}
-      {/*            <div className="text-2xl mb-2">*/}
-      {/*              {weather.current.condition.text}*/}
-      {/*            </div>*/}
-      {/*            <div>*/}
-      {/*              Feels like {Math.floor(weather.current.feelslike_c)}°C*/}
-      {/*            </div>*/}
-      {/*            <div className="">*/}
-      {/*              Chance of rain{" "}*/}
-      {/*              {Math.floor(*/}
-      {/*                weather.forecast.forecastday[0].day.daily_chance_of_rain,*/}
-      {/*              )}{" "}*/}
-      {/*              %*/}
-      {/*            </div>*/}
-      {/*            <div className="text-sm font-bold ">*/}
-      {/*              Local time {weather.location.localtime.split(" ")[1]}*/}
-      {/*            </div>*/}
-      {/*          </div>*/}
-      {/*        </div>*/}
-      {/*        <div className="p-2 w-1/3">*/}
-      {/*          <img*/}
-      {/*            className="size-30"*/}
-      {/*            src={getWeatherIcon(weather.current.condition.icon)}*/}
-      {/*            // src={weather.current.condition.icon}*/}
-      {/*            // src="/cloudy.svg"*/}
-      {/*            alt="Icon"*/}
-      {/*          />*/}
-      {/*        </div>*/}
-      {/*      </div>*/}
-      {/*      <div>*/}
-      {/*        <DayDetails weather={weather} />*/}
-      {/*        <SunDetails weather={weather} />*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*    /!*header *!/*/}
-
-      {/*    /!*hourly *!/*/}
-      {/*    <HourlyDetails weather={weather} />*/}
-      {/*    /!*hourly *!/*/}
-
-      {/*    /!*5 days *!/*/}
-      {/*    <div className="flex flex-wrap items-center mb-1">*/}
-      {/*      <p className="text-white/85 text-1xl font-bold">5 days forecast</p>*/}
-      {/*      <div className="p-3 ml-3 w-170">*/}
-      {/*        <img src="/Slice22.png" alt="slice" className="rounded-[5px]" />*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*    /!*7 days *!/*/}
-
-      {/*    /!*7 days items *!/*/}
-      {/*    <SevenDaysItems weather={weather} />*/}
-      {/*    /!*7 days items *!/*/}
-      {/*    <SevenDayItem selectedIndex={1} weather={weather} />*/}
-
-      {/*    <div className="mb-20"></div>*/}
-      {/*    /!*<AllIcons />*!/*/}
-      {/*  </div>*/}
-      {/*)}*/}
     </>
   );
 };

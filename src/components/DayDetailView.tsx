@@ -6,15 +6,79 @@ import {
   formatTime,
 } from "@/lib/temperatureUtils";
 import {Wind, Droplets, Eye, Gauge, Sun, Sunrise, Sunset} from "lucide-react";
-import { Forecastday } from "@/types/weather";
+import { Forecastday, Hour } from "@/types/weather";
 import { usEpaIndexText } from "@/utils/airQuality";
+import { useMemo } from "react";
+import { TempCenterBar } from "@/components/TempCenterBar";
 
 interface DayDetailViewProps {
   day: Forecastday;
   unit: "C" | "F";
 }
 
+type TimeOfDay = 'Night' | 'Morning' | 'Afternoon' | 'Evening';
+
+interface GroupedHours {
+  period: TimeOfDay;
+  hours: Hour[];
+}
+
+// Filter hours to only include specific times (00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00)
+const filterHours = (hours: Hour[]): Hour[] => {
+  const allowedTimes = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"];
+  
+  return hours.filter((hour) => {
+    const timeHour = hour.time.split(" ")[1];
+    return allowedTimes.includes(timeHour);
+  });
+};
+
+// Group hours by time of day
+const groupHoursByPeriod = (hours: Hour[]): GroupedHours[] => {
+  const grouped: { [key in TimeOfDay]: Hour[] } = {
+    Night: [],
+    Morning: [],
+    Afternoon: [],
+    Evening: [],
+  };
+
+  hours.forEach((hour) => {
+    const timeHour = hour.time.split(" ")[1];
+    const hourNum = parseInt(timeHour.split(":")[0]);
+
+    if (hourNum === 0 || hourNum === 3) {
+      grouped.Night.push(hour);
+    } else if (hourNum === 6 || hourNum === 9) {
+      grouped.Morning.push(hour);
+    } else if (hourNum === 12 || hourNum === 15) {
+      grouped.Afternoon.push(hour);
+    } else if (hourNum === 18 || hourNum === 21) {
+      grouped.Evening.push(hour);
+    }
+  });
+
+  // Convert to array and filter out empty groups
+  return Object.entries(grouped)
+    .map(([period, hours]) => ({ period: period as TimeOfDay, hours }))
+    .filter((group) => group.hours.length > 0);
+};
+
 export function DayDetailView({ day, unit }: DayDetailViewProps) {
+  // Filter and group hours
+  const filteredHours = useMemo(() => filterHours(day.hour), [day.hour]);
+  const groupedHours = useMemo(() => groupHoursByPeriod(filteredHours), [filteredHours]);
+
+  // Calculate global min/max temperatures from all filtered hours
+  const { globalMin, globalMax } = useMemo(() => {
+    if (filteredHours.length === 0) return { globalMin: 0, globalMax: 0 };
+    
+    const temps = filteredHours.map(hour => hour.temp_c);
+    const globalMin = Math.min(...temps);
+    const globalMax = Math.max(...temps);
+    
+    return { globalMin, globalMax };
+  }, [filteredHours]);
+
   return (
     <div className="weather-card bg-card/50 p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -37,40 +101,51 @@ export function DayDetailView({ day, unit }: DayDetailViewProps) {
 
       <div>
         <h4 className="font-semibold mb-3">Hourly</h4>
-        <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
-          {day.hour.slice(0, 8).map((hour, index) => (
-            <div key={index} className="bg-muted/40 rounded-lg p-3 text-center">
-              <div className="text-xs font-medium mb-1">
-                {formatTime(new Date(hour.time))}
-              </div>
-              <div className="text-2xl my-1 flex justify-center">
-                <img className="size-11" src={hour.condition.icon} alt="Hourly weather icon"/>
-                {/*{getWeatherIconCode(hour.condition.code)}*/}
-              </div>
-              <div className="text-xs font-semibold mb-1">
-                {formatTemperature(hour.temp_c, unit)}°
-              </div>
-              <div className="text-xs text-muted-foreground space-y-0.5">
-                <div
-                  title="Chance of rain %"
-                  className="flex items-center justify-center gap-1"
-                >
-                  <Droplets className="size-4" />
-                  {Math.round(hour.chance_of_rain)}%
+        <div className="overflow-y-hidden overflow-x-auto">
+          <div className="flex justify-between gap-6 min-w-190 lg:min-w-full ">
+            {groupedHours.map((group) => (
+              <div key={group.period} className="flex-1">
+                <h5 className="text-sm text-center font-semibold text-muted-foreground capitalize mb-2">
+                  {group.period}
+                </h5>
+                <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
+                  {group.hours.map((hour, index) => (
+                    <div key={index} className="bg-muted/40 flex-1 rounded-lg p-3 text-center">
+                      <div className="text-xs font-medium mb-1">
+                        {formatTime(new Date(hour.time))}
+                      </div>
+                      <div className="text-2xl my-1 flex justify-center">
+                        <img className="size-11" src={hour.condition.icon} alt="Hourly weather icon"/>
+                        {/*{getWeatherIconCode(hour.condition.code)}*/}
+                      </div>
+                      <div className="text-xs font-semibold mb-1">
+                        {formatTemperature(hour.temp_c, unit)}°
+                      </div>
+                      <div className="text-xs text-muted-foreground space-y-0.5">
+                        <div
+                          title="Chance of rain %"
+                          className="flex items-center justify-center gap-1"
+                        >
+                          <Droplets className="size-4" />
+                          {Math.round(hour.chance_of_rain)}%
+                        </div>
+                        <div title="Wind" className="flex items-center justify-center gap-1">
+                          <Wind className="size-4" />
+                          {Math.round(hour.wind_mph)}
+                        </div>
+                      </div>
+                      <TempCenterBar
+                        minTemp={globalMin}
+                        maxTemp={globalMax}
+                        temp={hour.temp_c}
+                        className="mt-1"
+                      />
+                    </div>
+                  ))}
                 </div>
-                <div title="Wind" className="flex items-center justify-center gap-1">
-                  <Wind className="size-4" />
-                  {Math.round(hour.wind_mph)}
-                </div>
               </div>
-              <div className="mt-1 h-1 bg-primary/20 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-cyan-400 rounded-full"
-                  style={{ width: `${hour.precip_in}%` }}
-                />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 

@@ -22,10 +22,29 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
   const gradientClass = getTemperatureGradient(weather.current.temp_c);
   const weatherIcon = getWeatherIconCode(weather.current.condition.code);
 
+  // Calculate min/max temperature including current temperature and hourly forecast
+  const getMinMaxTemp = () => {
+    const currentTemp = weather.current.temp_c;
+    const todayHourly = weather.forecast.forecastday[0].hour;
+    
+    // Get all temperatures from hourly forecast
+    const hourlyTemps = todayHourly.map(hour => hour.temp_c);
+    
+    // Include current temperature in the calculation
+    const allTemps = [currentTemp, ...hourlyTemps];
+    
+    return {
+      min: Math.min(...allTemps),
+      max: Math.max(...allTemps)
+    };
+  };
+
+  const { min, max } = getMinMaxTemp();
+
   return (
     <div className={`weather-card ${gradientClass} p-4 px-5 text-white shadow-2xl relative overflow-hidden h-full w-full`}>
       <div className="relative z-10">
-        <h2 className="text-2xl font-bold mb-3 drop-shadow-lg tracking-tight">{locationName}</h2>
+        <h2 className="text-2xl font-bold mb-3 drop-shadow-lg tracking-tight">{locationName}, {weather.location.country}</h2>
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
@@ -74,7 +93,7 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
           {/*<Thermometer className="size-4" />*/}
           {/*<ThermometerSnowflake className="size-4" />*/}
           <ThermometerSun className="size-4" />
-          Max {Math.floor(weather.forecast.forecastday[0].day.maxtemp_c)}° / Min {Math.floor(weather.forecast.forecastday[0].day.mintemp_c)}°
+          Max {formatTemperature(max, unit).replace('°C', '°').replace('°F', '°')} / Min {formatTemperature(min, unit).replace('°C', '°').replace('°F', '°')}
           {/*Local time {weather.location.localtime.split(' ')[1]}*/}
         </div>
       </div>

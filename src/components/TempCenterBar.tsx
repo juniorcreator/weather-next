@@ -2,58 +2,61 @@ import React from "react";
 import {getAppleStyleTempColor} from "@/utils/colorByTems";
 
 type Props = {
-  minTemp: number; // наприклад -45
-  maxTemp: number; // наприклад 45
-  temp: number;    // поточна температура
+  minTemp: number; // глобальный минимум (например, 6)
+  maxTemp: number; // глобальный максимум (например, 11)
+  temp: number;    // текущая температура
   className?: string;
 };
 
-export const TempCenterBar: React.FC<Props> = ({ minTemp, maxTemp, temp, className = "" }) => {
-  // безопасность: если max==min, возвращаем пустую шкалу
-  const absMax = Math.max(Math.abs(minTemp), Math.abs(maxTemp));
-  if (absMax === 0) {
-    return (
-      <div className={`w-full h-2 bg-gray-700 rounded ${className}`}>
-        <div className="w-px h-full bg-gray-500 mx-auto" />
-      </div>
-    );
-  }
+// Абсолютная шкала температур для бара
+const ABSOLUTE_MIN = -45;
+const ABSOLUTE_MAX = 45;
+const ABSOLUTE_RANGE = ABSOLUTE_MAX - ABSOLUTE_MIN; // 90
 
-  // percent от 0 до 50 (половина шкалы)
-  const rawPercent = (Math.abs(temp) / absMax) * 50;
-  const percent = Math.min(Math.max(rawPercent, 0), 50);
+export const TempCenterBar: React.FC<Props> = ({ minTemp, maxTemp, temp, className = "" }) => {
+  // Нормализуем температуру на абсолютную шкалу от -45 до +45
+  // Центр шкалы (0°) находится в 50% позиции
+  const normalizeToAbsolute = (temp: number): number => {
+    // Нормализуем к диапазону 0-1
+    const normalized = (temp - ABSOLUTE_MIN) / ABSOLUTE_RANGE;
+    // Преобразуем в процент от 0 до 100
+    return Math.max(0, Math.min(100, normalized * 100));
+  };
+
+  // Позиция текущей температуры на шкале (0-100%)
+  const tempPosition = normalizeToAbsolute(temp);
+  // Позиция центра (0°) на шкале (50%)
+  const centerPosition = normalizeToAbsolute(0);
 
   const isPositive = temp > 0;
   const isNegative = temp < 0;
   const isZero = temp === 0;
 
   return (
-    <div className={`relative w-full h-3 bg-gray-700 rounded overflow-hidden ${className}`}>
-      {/* Центр (вертикальная линия) */}
-      <div className="absolute top-0 bottom-0 left-1/2 transform -translate-x-1/2 w-px bg-gray-500" />
+    <div className={`relative w-full h-[10px] bg-muted rounded overflow-hidden mt-1 ${className}`}>
+      {/* Центр (вертикальная линия на позиции 0°) */}
+      <div className="absolute top-0 bottom-0 w-px bg-gray-500" style={{ left: `${centerPosition}%`, transform: 'translateX(-50%)' }} />
 
-      {/* Левый fill (минус) */}
+      {/* Левый fill (для отрицательных температур) */}
       {isNegative && (
         <div
-          className="absolute top-0 bottom-0  rounded-l"
-          // левый fill: начинается в (50 - percent)% и ширина = percent%
+          className="absolute top-0 bottom-0 rounded-l"
           style={{
             backgroundColor: getAppleStyleTempColor(Math.floor(temp)),
-            left: `${50 - percent}%`,
-            width: `${percent}%`,
+            left: `${tempPosition}%`,
+            width: `${centerPosition - tempPosition}%`,
           }}
         />
       )}
 
-      {/* left fill (plus) */}
+      {/* Правый fill (для положительных температур) */}
       {isPositive && (
         <div
-          className="absolute top-0 bottom-0  rounded-r"
-          // right fill: начинается в 50% и ширина = percent%
+          className="absolute top-0 bottom-0 rounded-r"
           style={{
             backgroundColor: getAppleStyleTempColor(Math.floor(temp)),
-            left: `50%`,
-            width: `${percent}%`,
+            left: `${centerPosition}%`,
+            width: `${tempPosition - centerPosition}%`,
           }}
         />
       )}
@@ -61,10 +64,11 @@ export const TempCenterBar: React.FC<Props> = ({ minTemp, maxTemp, temp, classNa
       {/* Небольшой индикатор для 0° (видимый при 0) */}
       {isZero && (
         <div
-          className="absolute top-0 bottom-0 left-1/2 transform -translate-x-1/2 rounded"
+          className="absolute top-0 bottom-0 rounded"
           style={{
+            left: `${centerPosition}%`,
+            transform: 'translateX(-50%)',
             width: 6,
-            // слегка выше по высоте, чтобы было видно
             height: 10,
             marginTop: -4,
             background: "#08d6c7",
