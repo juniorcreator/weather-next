@@ -14,7 +14,6 @@ import { CurrentWeatherCard } from "@/components/weather/CurrentWeatherCard";
 import { MetricsGrid } from "@/components/ui/MetricsGrid";
 import { SunriseSunset } from "@/components/ui/SunriseSunset";
 import { HourlyForecast } from "@/components/HourlyForecast";
-import { DailyForecast } from "@/components/DailyForecast";
 import { useTemperatureUnit } from "@/hooks/useWeatherData";
 
 // Dynamic imports for components below fold
@@ -291,19 +290,15 @@ const Search = () => {
           localtime={weather.location.localtime}
         />
 
-        <DailyForecast
-          daily={weather.forecast.forecastday}
-          unit={unit}
-          onDayClick={setSelectedDay}
-          selectedDay={selectedDay || undefined}
-        />
-
         {selectedDay && weather && (
           <Suspense fallback={<div className="weather-card bg-card/50 p-6 border border-border/50">Loading day details...</div>}>
             <DayDetailView
-              key={`${weather.location.name}-${selectedDay.date}`}
+              key={`${weather.location.name}`}
               day={selectedDay}
               unit={unit}
+              allDays={weather.forecast.forecastday}
+              onDayClick={setSelectedDay}
+              selectedDay={selectedDay || undefined}
             />
           </Suspense>
         )}

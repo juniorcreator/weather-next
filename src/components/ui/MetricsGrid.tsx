@@ -18,6 +18,12 @@ export function MetricsGrid({ weather, airQuality }: MetricsGridProps) {
       subtitle: usEpaIndexText(airQuality["us-epa-index"]),
     },
     {
+      icon: Sun,
+      label: 'UV Index',
+      value: weather.uv + " of 11",
+      subtitle: weather.uv < 3 ? 'Low' : weather.uv < 6 ? 'Moderate' : 'High',
+    },
+    {
       icon: Droplets,
       label: 'Humidity',
       value: `${Math.round(weather.humidity)} %`,
@@ -28,12 +34,6 @@ export function MetricsGrid({ weather, airQuality }: MetricsGridProps) {
       label: 'Wind',
       value: `${Math.round(weather.wind_mph)} mph`,
       subtitle: '',
-    },
-    {
-      icon: Sun,
-      label: 'UV Index',
-      value: weather.uv + " of 11",
-      subtitle: weather.uv < 3 ? 'Low' : weather.uv < 6 ? 'Moderate' : 'High',
     },
     {
       icon: Compass,

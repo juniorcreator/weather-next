@@ -9,5 +9,5 @@ export const usEpaIndexText = (index: number) => {
 
   const epaData = epaLabels.get(index);
 
-  return epaData ? epaData.label : "Unknown index";
+  return epaData ? epaData.label : null;
 }

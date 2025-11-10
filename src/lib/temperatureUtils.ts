@@ -49,11 +49,12 @@ export function formatTime(date: Date): string {
 
 export function formatDayName(date: Date): string {
   const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
+  // const tomorrow = new Date(today);
+  // tomorrow.setDate(tomorrow.getDate() + 1);
+  console.log(today.toDateString(), 'today.toDateString()');
+  console.log(date.toDateString(), 'date.toDateString()');
   if (date.toDateString() === today.toDateString()) return 'Today';
-  if (date.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
+  // if (date.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
 
-  return date.toLocaleDateString('en-US', { weekday: 'long', day: '2-digit' });
+  return date.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit' });
 }
