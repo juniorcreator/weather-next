@@ -5,13 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-/**
- * Normalizes image URL to absolute format required by Next.js Image
- * Converts protocol-relative URLs (//) to https://
- */
-export function normalizeImageUrl(url: string): string {
-  if (url.startsWith('//')) {
-    return `https:${url}`
+export function normalizeImageUrl(url: string, size: string = '64x64'): string {
+  let normalizedUrl = url;
+  
+  normalizedUrl = normalizedUrl.replace(/\d+x\d+/g, size);
+  
+  // Convert protocol-relative URLs (//) to https://
+  if (normalizedUrl.startsWith('//')) {
+    normalizedUrl = `https:${normalizedUrl}`;
   }
-  return url
+  
+  return normalizedUrl;
 }

@@ -7,6 +7,8 @@ import {
   getWeatherIconCode,
 } from '@/lib/temperatureUtils';
 import {RootWeather} from "@/types/weather";
+import Image from 'next/image';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface CurrentWeatherCardProps {
   weather: RootWeather | null;
@@ -80,11 +82,7 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
               </p>
             </div>
           </div>
-
-          <div className="text-8xl sm:text-9xl opacity-70">
-            {/*<img className="size-35" src={weather.current.condition.icon} alt="Current weather icon"/>*/}
-            {weatherIcon}
-          </div>
+          <Image className="size-30 md:size-40 opacity-70" src={normalizeImageUrl(weather.current.condition.icon, '128x128')} alt={weather.current.condition.text} width={100} height={100} />
         </div>
 
         <div className="mt-2 pt-2 border-t border-white/40 flex items-center gap-2 text-base font-medium drop-shadow-md">

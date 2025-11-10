@@ -240,15 +240,17 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
 
   return (
     <div className="weather-card bg-card/50 p-6 space-y-2 md:space-y-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-        <div>
-          <h3 className="text-2xl font-bold">
+       <h3 className="text-2xl font-bold mb-0">
             {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </h3>
+      <div className="flex flex-col lg:flex-row items-start md:items-center justify-between">
+        
+        <div className="flex-1 w-full">
+         
           <p className="text-muted-foreground flex items-center gap-2 mt-1">
             <Image 
-              className="size-11" 
-              src={normalizeImageUrl(day.day.condition.icon)} 
+              className="size-14" 
+              src={normalizeImageUrl(day.day.condition.icon, '128x128')} 
               alt={`${day.day.condition.text} weather icon`}
               width={44}
               height={44}
@@ -261,7 +263,7 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
             {formatTemperature(day.day.mintemp_c, unit)}
           </p>
         </div>
-        <div className="testblock mt-1 w-full md:w-1/2">
+        <div className="testblock mt-1 flex-1 max-w-full lg:max-w-none">
           <MemoizedDailyForecast
             daily={allDays}
             unit={unit}
@@ -275,10 +277,10 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
         <h4 className="hidden md:block font-semibold mb-2 md:mb-3">Hourly</h4>
         <div 
           ref={scrollContainerRef} 
-          className="overflow-y-hidden overflow-x-auto"
+          className="overflow-y-hidden overflow-x-auto styled-scroll"
           onScroll={handleScroll}
         >
-          <div className="flex gap-6 min-w-max">
+          <div className="flex gap-3 lg:gap-4 min-w-max">
             {allDays.map((dayItem, dayIndex) => {
               const filteredHours = filterHours(dayItem.hour);
               const groupedHours = groupHoursByPeriod(filteredHours);
@@ -288,13 +290,13 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
                   key={dayItem.date} 
                   ref={(el) => setDayRef(dayItem.date, el)}
                   data-day-date={dayItem.date}
-                  className="flex items-start gap-6"
+                  className="flex items-start gap-3 lg:gap-4"
                 >
                   {/* Day separator */}
                   {dayIndex > 0 && (
-                    <div className="flex flex-col items-center justify-center flex-shrink-0 relative">
-                      <div className="absolute top-0 bottom-0 w-px bg-border/50" />
-                      <div className="relative bg-card/50 px-3 py-1 rounded-md border border-border/50">
+                    <div className="flex flex-col items-center h-full justify-center flex-shrink-0 relative">
+                      <div className="absolute rounded-full top-0 bottom-0 w-[2px] bg-border/50" />
+                      <div className="relative bg-card/50 p-1 rounded-md border border-border/50">
                         <div className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
                           {formatDayName(new Date(dayItem.date))}
                         </div>

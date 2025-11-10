@@ -1,6 +1,8 @@
 import { formatDayName, formatTemperature } from '@/lib/temperatureUtils';
 import { Forecastday } from "@/types/weather";
 import { useRef, useLayoutEffect, useEffect, useCallback } from "react";
+import Image from 'next/image';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface DailyForecastProps {
   daily: Forecastday[];
@@ -90,9 +92,9 @@ export function DailyForecast({ daily, unit, onDayClick, selectedDay }: DailyFor
     <div className="w-full max-w-full overflow-x-hidden">
       <div 
         ref={containerRef} 
-        className="flex w-full md:w-60 gap-1 md:gap-3 p-1 overflow-x-auto overflow-y-hidden"
+        className="flex w-full md:w-auto max-w-full gap-1 md:gap-3 p-1 overflow-x-scroll overflow-y-hidden md:overflow-x-hidden"
       >
-        {daily.map((day) => {
+        {daily.map((day, index) => {
           const isSelected = selectedDay?.date === day.date;
 
           return (
@@ -100,12 +102,12 @@ export function DailyForecast({ daily, unit, onDayClick, selectedDay }: DailyFor
               key={day.date}
               ref={(el) => setDayRef(day.date, el)}
               onClick={() => handleClick(day)}
-              className={`min-w-20 bg-muted/30 rounded-lg p-2 text-center transition-all hover:bg-muted/90 hover:scale-103 border border-border/30 cursor-pointer ${
+              className={`min-w-20 bg-muted/30 rounded-lg p-2 lg:p-1 text-center transition-all hover:bg-muted/90 hover:scale-103 border border-border/30 cursor-pointer ${
                 isSelected ? 'ring-1 ring-primary bg-muted/90 scale-105' : ''
               }`}
             >
               <div className="text-sm mb-2">
-                {formatDayName(new Date(day.date))}
+                {formatDayName(new Date(day.date), index === 0)}
               </div>
 
               <div className="space-y-1">

@@ -1,0 +1,51 @@
+<svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD93D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8A00;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="cloudGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6BB6FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4D96FF;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Icon circle background -->
+  <circle cx="60" cy="60" r="55" fill="#2B3467" opacity="0.3"/>
+  
+  <!-- Sun -->
+  <circle cx="50" cy="50" r="18" fill="url(#sunGradient)" filter="url(#glow)"/>
+  
+  <!-- Sun rays -->
+  <g fill="url(#sunGradient)" opacity="0.8">
+    <circle cx="50" cy="28" r="2.5"/>
+    <circle cx="50" cy="72" r="2.5"/>
+    <circle cx="28" cy="50" r="2.5"/>
+    <circle cx="72" cy="50" r="2.5"/>
+    <circle cx="35" cy="35" r="2"/>
+    <circle cx="65" cy="35" r="2"/>
+    <circle cx="35" cy="65" r="2"/>
+    <circle cx="65" cy="65" r="2"/>
+  </g>
+  
+  <!-- Cloud -->
+  <g filter="url(#glow)">
+    <circle cx="65" cy="70" r="11" fill="url(#cloudGradient)"/>
+    <circle cx="80" cy="70" r="14" fill="url(#cloudGradient)"/>
+    <circle cx="92" cy="73" r="10" fill="url(#cloudGradient)"/>
+  </g>
+  
+  <!-- Text: GET-FORECAST -->
+  <text x="130" y="68" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#FFFFFF">
+    GET<tspan fill="#6BB6FF">-</tspan>FORECAST
+  </text>
+</svg>

@@ -47,14 +47,9 @@ export function formatTime(date: Date): string {
   return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
-export function formatDayName(date: Date): string {
-  const today = new Date();
-  // const tomorrow = new Date(today);
-  // tomorrow.setDate(tomorrow.getDate() + 1);
-  console.log(today.toDateString(), 'today.toDateString()');
-  console.log(date.toDateString(), 'date.toDateString()');
-  if (date.toDateString() === today.toDateString()) return 'Today';
-  // if (date.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
+export function formatDayName(date: Date, isFirst?: boolean): string {
+  // If this is the first element, always return "Today"
+  if (isFirst) return 'Today';
 
   return date.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit' });
 }

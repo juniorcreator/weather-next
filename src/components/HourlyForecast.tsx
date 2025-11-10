@@ -149,7 +149,7 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
 
   return (
     <div className="weather-card bg-card/50 px-6 py-3 border border-border/50">
-      <h3 className="text-xl font-bold mb-5">Hourly Forecast</h3>
+      <h3 className="text-xl font-bold mb-5">Today by Hours</h3>
 
       <div 
         ref={scrollContainerRef}
