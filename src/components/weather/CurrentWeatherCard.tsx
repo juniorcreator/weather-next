@@ -1,4 +1,4 @@
-import {Cloud, Droplets, Clock, Thermometer, ThermometerSun, ThermometerSnowflake, CloudRain} from 'lucide-react';
+import {Cloud, Droplets, Clock, Thermometer, ThermometerSun, ThermometerSnowflake, CloudRain, Sunrise, Sunset} from 'lucide-react';
 // import { CurrentWeather } from '@/lib/weatherAdapter';
 import {
   formatTemperature,
@@ -82,13 +82,20 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
               </p>
             </div>
           </div>
-          <Image className="size-30 md:size-40 opacity-70" src={normalizeImageUrl(weather.current.condition.icon, '128x128')} alt={weather.current.condition.text} width={100} height={30} />
+          <Image className="size-30 md:size-40 opacity-70" src={normalizeImageUrl(weather.current.condition.icon, '128x128')} alt={weather.current.condition.text} width={100} height={100} />
         </div>
 
-        <div className="mt-2 pt-2 border-t border-white/40 flex items-center gap-2 text-base font-medium drop-shadow-md">
-          <ThermometerSun className="size-4" />
-          Max {formatTemperature(max, unit).replace('°C', '°').replace('°F', '°')} / Min {formatTemperature(min, unit).replace('°C', '°').replace('°F', '°')}
-          {/*Local time {weather.location.localtime.split(' ')[1]}*/}
+        <div className="mt-2 pt-2 border-t border-white/40 flex items-center justify-between gap-4 flex-wrap text-sm font-medium drop-shadow-md">
+          <div className="flex items-center gap-2">
+            <ThermometerSun className="size-4" />
+            Max {formatTemperature(max, unit).replace('°C', '°').replace('°F', '°')} / Min {formatTemperature(min, unit).replace('°C', '°').replace('°F', '°')}
+          </div>
+          <div className="flex items-center gap-2">
+            <Sunrise className="size-3.5" />
+            {weather.forecast.forecastday[0].astro.sunrise} / 
+            <Sunset className="size-3.5 ml-1" />
+            {weather.forecast.forecastday[0].astro.sunset}
+          </div>
         </div>
       </div>
 

@@ -12,7 +12,7 @@ import {
 import { WeatherHeader } from "@/components/weather/WeatherHeader";
 import { CurrentWeatherCard } from "@/components/weather/CurrentWeatherCard";
 import { MetricsGrid } from "@/components/ui/MetricsGrid";
-import { SunriseSunset } from "@/components/ui/SunriseSunset";
+import { CompactWeeklyForecast } from "@/components/ui/CompactWeeklyForecast";
 import { HourlyForecast } from "@/components/HourlyForecast";
 import { useTemperatureUnit } from "@/hooks/useWeatherData";
 
@@ -272,14 +272,14 @@ const Search = () => {
               locationName={weather?.location.name}
             />
           </div>
-          <div className="space-y-3 lg:col-span-8 flex flex-col">
+          <div className="space-y-2 lg:col-span-8 flex flex-col">
             <MetricsGrid
               weather={weather.current}
               airQuality={weather?.current.air_quality}
             />
-            <SunriseSunset
-              sunrise={weather.forecast.forecastday[0].astro.sunrise}
-              sunset={weather.forecast.forecastday[0].astro.sunset}
+            <CompactWeeklyForecast
+              forecastDays={weather.forecast.forecastday}
+              unit={unit}
             />
           </div>
         </div>
