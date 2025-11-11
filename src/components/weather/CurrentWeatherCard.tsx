@@ -82,13 +82,10 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
               </p>
             </div>
           </div>
-          <Image className="size-30 md:size-40 opacity-70" src={normalizeImageUrl(weather.current.condition.icon, '128x128')} alt={weather.current.condition.text} width={100} height={100} />
+          <Image className="size-30 md:size-40 opacity-70" src={normalizeImageUrl(weather.current.condition.icon, '128x128')} alt={weather.current.condition.text} width={100} height={30} />
         </div>
 
         <div className="mt-2 pt-2 border-t border-white/40 flex items-center gap-2 text-base font-medium drop-shadow-md">
-          {/*<Clock className="size-4" />*/}
-          {/*<Thermometer className="size-4" />*/}
-          {/*<ThermometerSnowflake className="size-4" />*/}
           <ThermometerSun className="size-4" />
           Max {formatTemperature(max, unit).replace('°C', '°').replace('°F', '°')} / Min {formatTemperature(min, unit).replace('°C', '°').replace('°F', '°')}
           {/*Local time {weather.location.localtime.split(' ')[1]}*/}
