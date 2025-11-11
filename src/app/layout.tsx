@@ -22,12 +22,12 @@ export const metadata: Metadata = {
   keywords: ["weather", "forecast", "weather app", "temperature", "humidity", "air quality"],
   authors: [{ name: "Weather App" }],
   creator: "Weather App",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://weather-app.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://get-weather.com'),
   alternates: {
     canonical: '/',
   },
   icons: {
-    icon: '/favicon1111.ico',
+    icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
