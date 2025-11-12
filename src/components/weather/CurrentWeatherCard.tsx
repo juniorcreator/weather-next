@@ -43,13 +43,13 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
   const { min, max } = getMinMaxTemp();
 
   return (
-    <div className={`weather-card ${gradientClass} p-4 px-5 text-white shadow-2xl relative overflow-hidden h-full w-full`}>
+    <div className={`weather-card ${gradientClass} p-4 px-4 sm:px-5 text-white shadow-2xl relative overflow-hidden h-full w-full`}>
       <div className="relative z-10">
         <h2 className="text-xl sm:text-2xl font-bold mb-3 drop-shadow-lg tracking-tight">{locationName}, {weather.location.country}</h2>
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-6xl sm:text-7xl font-bold mb-3 drop-shadow-2xl leading-none tracking-tighter">
+            <h1 className="text-5xl sm:text-7xl font-bold md:mb-2 mb-1 sm:mb-3 drop-shadow-2xl leading-none tracking-tighter">
               {formatTemperature(weather.current.temp_c, unit)}
             </h1>
 
@@ -85,15 +85,14 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
           <Image className="size-30 md:size-40 opacity-70" src={normalizeImageUrl(weather.current.condition.icon, '128x128')} alt={weather.current.condition.text} width={100} height={100} />
         </div>
 
-        <div className="mt-2 pt-2 border-t border-white/40 flex items-center justify-between gap-4 flex-wrap text-sm font-medium drop-shadow-md">
+        <div className="mt-2 pt-2 border-t border-white/40 flex items-center justify-between gap-2 md:gap-4 flex-wrap text-[13px] sm:text-base font-medium drop-shadow-md">
           <div className="flex items-center gap-2">
             <ThermometerSun className="size-4" />
             Max {formatTemperature(max, unit).replace('°C', '°').replace('°F', '°')} / Min {formatTemperature(min, unit).replace('°C', '°').replace('°F', '°')}
           </div>
-          <div className="flex items-center gap-2">
-            <Sunrise className="size-3.5" />
-            {weather.forecast.forecastday[0].astro.sunrise} / 
-            <Sunset className="size-3.5 ml-1" />
+          <div className="flex items-center gap-1">
+            <Sunrise className="size-4" />
+            {weather.forecast.forecastday[0].astro.sunrise} /<Sunset className="size-4" />
             {weather.forecast.forecastday[0].astro.sunset}
           </div>
         </div>

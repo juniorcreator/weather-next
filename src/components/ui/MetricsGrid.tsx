@@ -50,14 +50,14 @@ export function MetricsGrid({ weather, airQuality }: MetricsGridProps) {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 h-full">
+    <div className="grid grid-cols-3 gap-2 h-full">
       {metrics.map((metric) => (
         <div key={metric.label} className="metric-card px-2 py-2">
-          <div className="flex items-start justify-between mb-2">
+          <div className="flex items-center md:items-start justify-between mb-1 sm:mb-2">
             <metric.icon className="size-5 text-primary" />
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wide">{metric.label}</span>
           </div>
-          <div className="text-xl font-bold">{metric.value}</div>
+          <div className="text-base md:text-xl font-bold">{metric.value}</div>
           {metric.subtitle && (
             <div className="text-xs font-semibold text-muted-foreground mt-1">{metric.subtitle}</div>
           )}

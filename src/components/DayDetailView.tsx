@@ -328,7 +328,7 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
                                 />
                               </div>
                               <div className="font-black text-xl mb-1">
-                                {formatTemperature(hour.temp_c, unit).replace('°C', '°').replace('°F', '°')}°
+                                {formatTemperature(hour.temp_c, unit).replace('°C', '').replace('°F', '')}°
                               </div>
                               <div className="text-sm font-medium text-muted-foreground space-y-0.5">
                                 <div

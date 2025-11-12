@@ -22,12 +22,15 @@ export function CompactWeeklyForecast({ forecastDays, unit }: CompactWeeklyForec
         {upcomingDays.map((day, index) => (
           <div
             key={day.date}
-            className="flex flex-col items-center gap-1.5 text-[10px]"
+            className="flex flex-col items-center gap-1.5 text-[10px] relative"
           >
+            {index !== upcomingDays.length - 1 && (
+              <div className="absolute right-[-3px] top-0 bottom-0 w-px bg-border/50" />
+            )}
           
             <div className="min-w-0 flex-1">
-              <div className="text-[13px] md:text-[14px] lg:text-[13px] font-bold text-muted-foreground truncate">
-                {index === 0 ? 'Tomorrow' : formatDayName(new Date(day.date), false)}
+              <div className="text-[14px] lg:text-[13px] font-bold text-muted-foreground truncate">
+                {formatDayName(new Date(day.date), false)}
               </div>
             </div>
             <div className="flex-shrink-0">
@@ -39,7 +42,7 @@ export function CompactWeeklyForecast({ forecastDays, unit }: CompactWeeklyForec
                 className="size-9"
               />
             </div>
-            <div className="text-[14px] font-bold whitespace-nowrap">
+            <div className="text-[13px] md:text-[14px] font-bold whitespace-nowrap">
               {formatTemp(day.day.maxtemp_c)}/{formatTemp(day.day.mintemp_c)}
             </div>
           </div>
