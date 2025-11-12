@@ -70,7 +70,7 @@ export const TempCenterBar: React.FC<Props> = ({ minTemp, maxTemp, temp, classNa
             transform: 'translateX(-50%)',
             width: 6,
             height: 10,
-            marginTop: -4,
+            marginTop: 0,
             background: "#08d6c7",
           }}
         />

@@ -1,11 +1,9 @@
 "use client";
 
-import { MapPin } from "lucide-react";
 import React, { useEffect, useState, Suspense } from "react";
 import dynamic from 'next/dynamic';
 import { getWeather, getWeatherByIP } from "@/utils/api-weatherapi";
 import { Forecastday, RootWeather } from "@/types/weather";
-import { getAppleStyleTempColor } from "@/utils/colorByTems";
 import {
   getHoursInterval,
 } from "@/utils/helpers";
@@ -30,7 +28,6 @@ const Search = () => {
   const [selectedDay, setSelectedDay] = useState<Forecastday | null>(null);
   const [error, setError] = useState("");
   const [weather, setWeather] = useState<RootWeather | null>(null);
-  const [bg, setBg] = useState("");
 
   const handleFetchData = async (city: string) => {
     if (!city) {
@@ -82,8 +79,6 @@ const Search = () => {
     }
     
     getHoursInterval(data.forecast.forecastday[0].hour);
-    // setBg(getAppleStyleTempColor(24));
-    setBg(getAppleStyleTempColor(Math.floor(data.current.temp_c)));
     setWeather(data);
   };
 
@@ -125,7 +120,6 @@ const Search = () => {
     }
     
     getHoursInterval(data.forecast.forecastday[0].hour);
-    setBg(getAppleStyleTempColor(Math.floor(data.current.temp_c)));
     setWeather(data);
   };
 
@@ -168,7 +162,6 @@ const Search = () => {
       }
       
       getHoursInterval(data.forecast.forecastday[0].hour);
-      setBg(getAppleStyleTempColor(Math.floor(data.current.temp_c)));
       setWeather(data);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
@@ -246,7 +239,7 @@ const Search = () => {
       </div>
     );
   }
-  console.log(weather, 'weather');
+  // console.log(weather, 'weather');
 
   return (
     <>
