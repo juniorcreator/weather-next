@@ -1,6 +1,10 @@
 # https://www.robotstxt.org/robotstxt.html
+# Robots.txt configuration for search engine crawlers
+# Note: Update the Sitemap URL with your production domain before deployment
+
 User-agent: *
 Allow: /
 
-Sitemap: https://weather-app.com/sitemap.xml
+# Sitemap location
+Sitemap: https://get-forecast.com/sitemap.xml
 

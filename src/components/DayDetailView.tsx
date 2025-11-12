@@ -240,6 +240,7 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
 
   return (
     <div className="weather-card bg-card/50 p-6 space-y-2 md:space-y-6">
+       <h3 className="text-xl font-bold mb-5">7-Day Forecast</h3>
        <h3 className="text-2xl font-bold mb-0">
             {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </h3>
@@ -280,7 +281,7 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
           className="overflow-y-hidden overflow-x-auto styled-scroll"
           onScroll={handleScroll}
         >
-          <div className="flex gap-3 lg:gap-4 min-w-max">
+          <div className="flex gap-1 min-w-max">
             {allDays.map((dayItem, dayIndex) => {
               const filteredHours = filterHours(dayItem.hour);
               const groupedHours = groupHoursByPeriod(filteredHours);
@@ -290,12 +291,12 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
                   key={dayItem.date} 
                   ref={(el) => setDayRef(dayItem.date, el)}
                   data-day-date={dayItem.date}
-                  className="flex items-start gap-3 lg:gap-4"
+                  className="flex items-start gap-1"
                 >
                   {/* Day separator */}
                   {dayIndex > 0 && (
                     <div className="flex flex-col items-center h-full justify-center flex-shrink-0 relative">
-                      <div className="absolute rounded-full top-0 bottom-0 w-[2px] bg-border/50" />
+                      <div className="absolute rounded-full top-0 bottom-0 w-[1px] bg-border/50" />
                       <div className="relative bg-card/50 p-1 rounded-md border border-border/50">
                         <div className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
                           {formatDayName(new Date(dayItem.date))}
@@ -305,13 +306,13 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
                   )}
                   
                   {/* Day periods */}
-                  <div className="flex justify-between gap-6">
+                  <div className="flex justify-between gap-4">
                     {groupedHours.map((group) => (
                       <div key={`${dayItem.date}-${group.period}`} className="flex-1">
                         <h5 className="text-sm text-center font-semibold text-muted-foreground capitalize mb-2">
                           {group.period}
                         </h5>
-                        <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 gap-1">
                           {group.hours.map((hour) => (
                             <div key={hour.time} className="bg-muted/40 flex-1 rounded-lg p-3 text-center">
                               <div className="text-sm font-bold mb-1">
