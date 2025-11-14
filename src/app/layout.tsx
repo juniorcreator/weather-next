@@ -3,15 +3,23 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistSans = Geist({ 
+  variable: "--font-geist-sans", 
+  subsets: ["latin"],
+  display: 'swap',
+  preload: true,
+});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: 'swap',
+  preload: true,
 });
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
+  preload: true,
 });
 
 export const metadata: Metadata = {

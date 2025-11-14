@@ -16,7 +16,36 @@ interface CurrentWeatherCardProps {
 
 export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeatherCardProps) {
   if (!weather) {
-    return <h1>weather loading...</h1>;
+    // Skeleton loader that matches the final layout to prevent layout shift
+    return (
+      <div className="weather-card bg-gradient-to-br from-temp-mild-start/75 to-temp-mild-end/75 p-4 px-4 sm:px-5 text-white shadow-2xl relative overflow-hidden h-full w-full">
+        <div className="relative z-10">
+          <div className="h-7 sm:h-8 mb-3 skeleton-pulse w-48 sm:w-64 rounded"></div>
+          
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <div className="h-16 sm:h-24 md:h-28 mb-1 sm:mb-3 skeleton-pulse w-32 sm:w-40 rounded"></div>
+              
+              <div className="space-y-2 mt-2">
+                <div className="h-7 skeleton-pulse w-40 sm:w-48 rounded"></div>
+                <div className="h-6 skeleton-pulse w-36 sm:w-44 rounded"></div>
+                <div className="h-5 skeleton-pulse w-32 sm:w-40 rounded"></div>
+              </div>
+            </div>
+            <div className="size-30 md:size-40 skeleton-pulse rounded-full"></div>
+          </div>
+          
+          <div className="mt-2 pt-2 border-t border-white/40 flex items-center justify-between gap-2 md:gap-4 flex-wrap">
+            <div className="h-4 sm:h-5 skeleton-pulse w-32 sm:w-40 rounded"></div>
+            <div className="h-4 sm:h-5 skeleton-pulse w-28 sm:w-36 rounded"></div>
+          </div>
+        </div>
+        
+        <div className="absolute left-1/4 bottom-0 sm:right-0 sm:left-auto w-50 sm:w-72 h-50 sm:h-72 opacity-10">
+          <Cloud className="w-full h-full" />
+        </div>
+      </div>
+    );
   }
   const gradientClass = getTemperatureGradient(weather.current.temp_c);
   const weatherIcon = getWeatherIconCode(weather.current.condition.code);
@@ -79,7 +108,15 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
               </p>
             </div>
           </div>
-          <Image className="size-30 md:size-40 opacity-70" src={normalizeImageUrl(weather.current.condition.icon, '128x128')} alt={weather.current.condition.text} width={100} height={100} />
+          <Image 
+            className="size-30 md:size-40 opacity-70" 
+            src={normalizeImageUrl(weather.current.condition.icon, '128x128')} 
+            alt={weather.current.condition.text} 
+            width={100} 
+            height={100}
+            priority
+            loading="eager"
+          />
         </div>
 
         <div className="mt-2 pt-2 border-t border-white/40 flex items-center justify-between gap-2 md:gap-4 flex-wrap text-[13px] sm:text-base font-medium drop-shadow-md">
