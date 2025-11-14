@@ -1,8 +1,6 @@
 import { formatDayName, formatTemperature } from '@/lib/temperatureUtils';
 import { Forecastday } from "@/types/weather";
 import { useRef, useLayoutEffect, useEffect, useCallback } from "react";
-import Image from 'next/image';
-import { normalizeImageUrl } from '@/lib/utils';
 
 interface DailyForecastProps {
   daily: Forecastday[];

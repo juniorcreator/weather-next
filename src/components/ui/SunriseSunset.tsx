@@ -1,5 +1,4 @@
 import { Sunrise, Sunset } from 'lucide-react';
-import { formatTime } from '@/lib/temperatureUtils';
 
 interface SunriseSunsetProps {
   sunrise: string;

@@ -1,10 +1,4 @@
-// import { DailyForecast } from '@/lib/weatherAdapter';
-import {
-  formatTemperature,
-  getWeatherIconCode,
-  formatTime,
-  formatDayName,
-} from "@/lib/temperatureUtils";
+import {formatTemperature, formatTime, formatDayName} from "@/lib/temperatureUtils";
 import {Wind, Droplets, Eye, Gauge, Sun, Sunrise, Sunset} from "lucide-react";
 import { Forecastday, Hour } from "@/types/weather";
 import { usEpaIndexText } from "@/utils/airQuality";

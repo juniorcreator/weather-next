@@ -1,9 +1,7 @@
-import {Cloud, Droplets, Clock, Thermometer, ThermometerSun, ThermometerSnowflake, CloudRain, Sunrise, Sunset} from 'lucide-react';
-// import { CurrentWeather } from '@/lib/weatherAdapter';
+import {Cloud, ThermometerSun, CloudRain, Sunrise, Sunset} from 'lucide-react';
 import {
   formatTemperature,
   getTemperatureGradient,
-  formatTime,
   getWeatherIconCode,
 } from '@/lib/temperatureUtils';
 import {RootWeather} from "@/types/weather";
@@ -76,7 +74,6 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
                 </svg> <p> Feels like {formatTemperature(weather.current.feelslike_c, unit)}</p>
               </div>
               <p className="flex items-center gap-2 text-base font-medium">
-                {/*<Droplets className="h-4 w-4" />*/}
                 <CloudRain className="size-4" />
                 Rain {Math.round(weather.forecast.forecastday[0].day.daily_chance_of_rain)}%
               </p>

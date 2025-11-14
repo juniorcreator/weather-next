@@ -1,7 +1,6 @@
 import { Leaf, Wind } from 'lucide-react';
 import {AirQuality, Pollen} from "@/types/weather";
 import {usEpaIndexText} from "@/utils/airQuality";
-// import { PollenData, AirQuality } from '@/lib/weatherAdapter';
 
 interface PollenAirQualityProps {
   pollen: Pollen;
@@ -9,11 +8,6 @@ interface PollenAirQualityProps {
 }
 
 export function PollenAirQuality({ pollen, airQuality }: PollenAirQualityProps) {
-  // Calculate Tree and Weed values
-  const treeValue = pollen.Alder + pollen.Birch + pollen.Hazel + pollen.Oak;
-  const weedValue = pollen.Mugwort + pollen.Ragweed;
-  const grassValue = pollen.Grass;
-
   // Fix getPollenLevel function according to API documentation
   const getPollenLevel = (value: number) => {
     if (value >= 1 && value < 20) return { text: 'Low', color: 'text-green-400' };

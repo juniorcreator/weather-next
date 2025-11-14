@@ -1,7 +1,6 @@
 "use client";
 
-// import { HourlyForecast as HourlyData } from '@/lib/weatherAdapter';
-import { formatTime, formatTemperature, getWeatherIconCode } from '@/lib/temperatureUtils';
+import { formatTime, formatTemperature } from '@/lib/temperatureUtils';
 import { Wind, Droplets } from 'lucide-react';
 import { Hour } from "@/types/weather";
 import { useEffect, useRef, useState, useMemo } from 'react';
@@ -186,7 +185,6 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
                         height={48}
                         loading="lazy"
                       />
-                      {/*{getWeatherIconCode(hour.condition.code)}*/}
                     </div>
 
                     <div className="font-black text-xl mb-2">
@@ -195,7 +193,6 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
 
                     <div className="space-y-1.5 text-sm font-medium text-muted-foreground">
                       <div title="Rain %" className="flex items-center justify-center gap-1">
-                        {/*<span className="text-xs">rain</span>*/}
                         <Droplets className="h-3 w-3" />
                         {Math.round(hour.chance_of_rain)}%
                       </div>

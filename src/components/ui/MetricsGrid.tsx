@@ -1,5 +1,4 @@
 import { Wind, Droplets, Eye, Gauge, Sun, Compass } from 'lucide-react';
-// import { CurrentWeather, AirQuality } from '@/lib/weatherAdapter';
 import { formatTime } from '@/lib/temperatureUtils';
 import {Current, AirQuality, RootWeather} from "@/types/weather";
 import {usEpaIndexText} from "@/utils/airQuality";
