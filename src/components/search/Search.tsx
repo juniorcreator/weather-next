@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, Suspense, useCallback } from "react";
 import dynamic from 'next/dynamic';
 import { getWeather, getWeatherByIP } from "@/utils/api-weatherapi";
 import { Forecastday, RootWeather } from "@/types/weather";
@@ -19,11 +19,32 @@ const DayDetailView = dynamic(() => import('@/components/DayDetailView').then(mo
 
 const PollenAirQuality = dynamic(() => import('@/components/PollenAirQuality').then(mod => ({ default: mod.PollenAirQuality })));
 
-const Search = () => {
+interface SearchProps {
+  initialWeatherData?: RootWeather | null;
+}
+
+const Search = ({ initialWeatherData = null }: SearchProps) => {
   const { unit, toggleUnit } = useTemperatureUnit();
   const [selectedDay, setSelectedDay] = useState<Forecastday | null>(null);
   const [error, setError] = useState("");
-  const [weather, setWeather] = useState<RootWeather | null>(null);
+  const [weather, setWeather] = useState<RootWeather | null>(initialWeatherData);
+
+  // Helper function to save location to both localStorage and cookies
+  const saveLocation = useCallback((locationData: { cityName?: string; lat?: number; lon?: number }) => {
+    try {
+      // Save to localStorage for client-side use
+      localStorage.setItem('weather-location', JSON.stringify(locationData));
+      
+      // Save to cookies for server-side use on next page load
+      const cookieValue = JSON.stringify(locationData);
+      const maxAge = 365 * 24 * 60 * 60; // 1 year
+      document.cookie = `weather-location=${encodeURIComponent(cookieValue)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to save location:', err);
+      }
+    }
+  }, []);
 
   const handleFetchData = async (city: string) => {
     if (!city) {
@@ -48,31 +69,25 @@ const Search = () => {
       return;
     }
     
-    // Save location to localStorage after successful fetch
-    try {
-      const locationData: {
-        cityName?: string;
-        lat?: number;
-        lon?: number;
-      } = {};
-      
-      // Save city name
-      if (data.location?.name) {
-        locationData.cityName = data.location.name;
-      }
-      
-      // Save coordinates if available
-      if (data.location?.lat && data.location?.lon) {
-        locationData.lat = data.location.lat;
-        locationData.lon = data.location.lon;
-      }
-      
-      localStorage.setItem('weather-location', JSON.stringify(locationData));
-    } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to save location to localStorage:', err);
-      }
+    // Save location to both localStorage and cookies after successful fetch
+    const locationData: {
+      cityName?: string;
+      lat?: number;
+      lon?: number;
+    } = {};
+    
+    // Save city name
+    if (data.location?.name) {
+      locationData.cityName = data.location.name;
     }
+    
+    // Save coordinates if available
+    if (data.location?.lat && data.location?.lon) {
+      locationData.lat = data.location.lat;
+      locationData.lon = data.location.lon;
+    }
+    
+    saveLocation(locationData);
     
     getHoursInterval(data.forecast.forecastday[0].hour);
     setWeather(data);
@@ -92,28 +107,22 @@ const Search = () => {
       return;
     }
     
-    // Save location to localStorage after successful fetch
-    try {
-      const locationData: {
-        cityName?: string;
-        lat?: number;
-        lon?: number;
-      } = {
-        lat,
-        lon,
-      };
-      
-      // Save city name from API response
-      if (data.location?.name) {
-        locationData.cityName = data.location.name;
-      }
-      
-      localStorage.setItem('weather-location', JSON.stringify(locationData));
-    } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to save location to localStorage:', err);
-      }
+    // Save location to both localStorage and cookies after successful fetch
+    const locationData: {
+      cityName?: string;
+      lat?: number;
+      lon?: number;
+    } = {
+      lat,
+      lon,
+    };
+    
+    // Save city name from API response
+    if (data.location?.name) {
+      locationData.cityName = data.location.name;
     }
+    
+    saveLocation(locationData);
     
     getHoursInterval(data.forecast.forecastday[0].hour);
     setWeather(data);
@@ -132,29 +141,23 @@ const Search = () => {
         return;
       }
       
-      // Save location to localStorage after successful fetch
+      // Save location to both localStorage and cookies after successful fetch
       if (data.location?.lat && data.location?.lon) {
-        try {
-          const locationData: {
-            cityName?: string;
-            lat?: number;
-            lon?: number;
-          } = {
-            lat: data.location.lat,
-            lon: data.location.lon,
-          };
-          
-          // Save city name from API response
-          if (data.location?.name) {
-            locationData.cityName = data.location.name;
-          }
-          
-          localStorage.setItem('weather-location', JSON.stringify(locationData));
-        } catch (err) {
-          if (process.env.NODE_ENV === 'development') {
-            console.error('Failed to save location to localStorage:', err);
-          }
+        const locationData: {
+          cityName?: string;
+          lat?: number;
+          lon?: number;
+        } = {
+          lat: data.location.lat,
+          lon: data.location.lon,
+        };
+        
+        // Save city name from API response
+        if (data.location?.name) {
+          locationData.cityName = data.location.name;
         }
+        
+        saveLocation(locationData);
       }
       
       getHoursInterval(data.forecast.forecastday[0].hour);
@@ -173,8 +176,50 @@ const Search = () => {
     }
   };
 
-  // Check localStorage for saved location on mount
+  // Initialize weather data from server-side props and process it
   useEffect(() => {
+    if (initialWeatherData) {
+      // Process initial data from server
+      getHoursInterval(initialWeatherData.forecast.forecastday[0].hour);
+      
+      // Save location to both localStorage and cookies if not already saved
+      try {
+        const saved = localStorage.getItem('weather-location');
+        if (!saved && initialWeatherData.location) {
+          const locationData: {
+            cityName?: string;
+            lat?: number;
+            lon?: number;
+          } = {};
+          
+          if (initialWeatherData.location.name) {
+            locationData.cityName = initialWeatherData.location.name;
+          }
+          
+          if (initialWeatherData.location.lat && initialWeatherData.location.lon) {
+            locationData.lat = initialWeatherData.location.lat;
+            locationData.lon = initialWeatherData.location.lon;
+          }
+          
+          if (Object.keys(locationData).length > 0) {
+            saveLocation(locationData);
+          }
+        }
+      } catch (err) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to save initial location:', err);
+        }
+      }
+    }
+  }, [initialWeatherData, saveLocation]);
+
+  // Check localStorage for saved location on mount (only if no initial data)
+  useEffect(() => {
+    // Skip if we already have initial weather data from server
+    if (initialWeatherData) {
+      return;
+    }
+    
     const loadSavedLocation = async () => {
       try {
         const saved = localStorage.getItem('weather-location');

@@ -24,7 +24,7 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
           
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <div className="h-16 sm:h-24 md:h-28 mb-1 sm:mb-3 skeleton-pulse w-32 sm:w-40 rounded"></div>
+              <div className="h-18 sm:h-24 md:h-28 mb-1 sm:mb-3 skeleton-pulse w-32 sm:w-40 rounded"></div>
               
               <div className="space-y-2 mt-2">
                 <div className="h-7 skeleton-pulse w-40 sm:w-48 rounded"></div>
