@@ -15,13 +15,9 @@ import { HourlyForecast } from "@/components/HourlyForecast";
 import { useTemperatureUnit } from "@/hooks/useWeatherData";
 
 // Dynamic imports for components below fold
-const DayDetailView = dynamic(() => import('@/components/DayDetailView').then(mod => ({ default: mod.DayDetailView })), {
-  loading: () => <div className="weather-card bg-card/50 p-6 border border-border/50">Loading day details...</div>,
-});
+const DayDetailView = dynamic(() => import('@/components/DayDetailView').then(mod => ({ default: mod.DayDetailView })));
 
-const PollenAirQuality = dynamic(() => import('@/components/PollenAirQuality').then(mod => ({ default: mod.PollenAirQuality })), {
-  loading: () => <div className="weather-card bg-card/50 p-6 border border-border/50">Loading air quality data...</div>,
-});
+const PollenAirQuality = dynamic(() => import('@/components/PollenAirQuality').then(mod => ({ default: mod.PollenAirQuality })));
 
 const Search = () => {
   const { unit, toggleUnit } = useTemperatureUnit();
@@ -231,13 +227,9 @@ const Search = () => {
     }
   }, [weather]);
 
-  // Prevent hydration mismatch by ensuring consistent initial render
+  // Don't render anything until weather data is loaded
   if (!weather) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <h2 className="text-foreground">loading...</h2>
-      </div>
-    );
+    return null;
   }
   // console.log(weather, 'weather');
 
@@ -284,7 +276,7 @@ const Search = () => {
         />
 
         {selectedDay && weather && (
-          <Suspense fallback={<div className="weather-card bg-card/50 p-6 border border-border/50">Loading day details...</div>}>
+          <Suspense fallback={null}>
             <DayDetailView
               key={`${weather.location.name}`}
               day={selectedDay}
@@ -296,7 +288,7 @@ const Search = () => {
           </Suspense>
         )}
 
-        <Suspense fallback={<div className="weather-card bg-card/50 p-6 border border-border/50">Loading air quality data...</div>}>
+        <Suspense fallback={null}>
           <PollenAirQuality pollen={weather.current.pollen} airQuality={weather.current.air_quality} />
         </Suspense>
 
