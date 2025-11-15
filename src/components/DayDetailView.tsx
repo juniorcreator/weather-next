@@ -361,7 +361,7 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
         <h4 className="font-semibold mb-3">Details</h4>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           <div className="bg-muted/40 rounded-lg p-3 flex items-center gap-3">
-            <Droplets className="h-5 w-5 text-cyan-400" />
+            <Droplets className="h-5 w-5 text-primary" />
             <div>
               <div className="text-xs text-muted-foreground">
                 Total precipitation
@@ -373,7 +373,7 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
           </div>
 
           <div className="bg-muted/40 rounded-lg p-3 flex items-center gap-3">
-            <Droplets className="h-5 w-5 text-blue-400" />
+            <Droplets className="h-5 w-5 text-primary" />
             <div>
               <div className="text-xs text-muted-foreground">
                 Chance of rain
@@ -399,7 +399,7 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
         
 
           <div className="bg-muted/40 rounded-lg p-3 flex items-center gap-3">
-            <Droplets className="h-5 w-5 text-purple-400" />
+            <Droplets className="h-5 w-5 text-primary" />
             <div>
               <div className="text-xs text-muted-foreground">Humidity</div>
               <div className="font-semibold">{day.day.avghumidity}%</div>
@@ -407,7 +407,7 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
           </div>
 
           <div className="bg-muted/40 rounded-lg p-3 flex items-center gap-3">
-            <Sun className="h-5 w-5 text-orange-400" />
+            <Sun className="h-5 w-5 text-primary" />
             <div>
               <div className="text-xs text-muted-foreground">UV Index</div>
               <div className="font-semibold">{day.day.uv} of 11</div>
