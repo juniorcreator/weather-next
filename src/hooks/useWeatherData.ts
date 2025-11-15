@@ -112,7 +112,7 @@ export function useGeolocation() {
 }
 
 export function useTemperatureUnit() {
-  const [unit, setUnit] = useState<'C' | 'F'>('C');
+  const [unit, setUnit] = useState<'C' | 'F'>('F');
   const [mounted, setMounted] = useState(false);
 
   const toggleUnit = () => {
