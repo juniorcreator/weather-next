@@ -142,7 +142,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const initialWeatherData = await getInitialWeatherData();
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://get-forecast.com';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.get-forecast.com';
   
   // Generate dynamic structured data based on city
   const generateStructuredData = () => {

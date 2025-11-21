@@ -70,7 +70,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Weather App" }],
   creator: "Weather App",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://get-forecast.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.get-forecast.com'),
   alternates: {
     canonical: '/',
   },
@@ -129,7 +129,7 @@ const structuredData = {
   '@type': 'WebApplication',
   name: 'Weather Forecast App',
   description: 'Get accurate weather forecasts for New York, Los Angeles, Chicago, London, Toronto, Sydney and 1000+ cities worldwide. Real-time weather data, hourly and daily forecasts, 7-day outlook, air quality index, pollen count, UV index, and severe weather alerts.',
-  url: process.env.NEXT_PUBLIC_APP_URL || 'https://get-forecast.com',
+  url: process.env.NEXT_PUBLIC_APP_URL || 'https://www.get-forecast.com',
   applicationCategory: 'WeatherApplication',
   operatingSystem: 'Web',
   offers: {

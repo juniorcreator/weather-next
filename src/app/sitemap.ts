@@ -11,7 +11,7 @@ import { MetadataRoute } from 'next';
  * they can be included here as static or dynamic routes.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://get-forecast.com';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.get-forecast.com';
 
   return [
     {
