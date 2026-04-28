@@ -53,6 +53,7 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
     searchTimeoutRef.current = setTimeout(async () => {
       try {
         const results = await searchLocations(searchQuery);
+        console.log(results, " results 111");
         setSuggestions(results);
       } catch (error) {
         console.error('Error fetching suggestions:', error);

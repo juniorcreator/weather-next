@@ -20,7 +20,7 @@ export const getWeather = async (query: string) => {
 
 export const getWeatherByIP = async () => {
   const response = await fetch(
-    `https://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API2}&q=auto:ip&days=7&pollen=yes&aqi=yes&alerts=yes`,
+    `https://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API}&q=auto:ip&days=7&pollen=yes&aqi=yes&alerts=yes`,
     {
       next: { 
         revalidate: 300,
@@ -43,7 +43,7 @@ export const searchLocations = async (query: string) => {
   
   try {
     const response = await fetch(
-      `https://api.weatherapi.com/v1/search.json?key=${process.env.WEATHER_API2}&q=${encodeURIComponent(query)}`,
+      `https://api.weatherapi.com/v1/search.json?key=${process.env.WEATHER_API}&q=${encodeURIComponent(query)}`,
       {
         next: { revalidate: 3600 },
       }
