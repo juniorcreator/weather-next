@@ -13,7 +13,6 @@ export function CompactWeeklyForecast({ forecastDays, unit }: CompactWeeklyForec
     return formatTemperature(temp, unit).replace('°C', '°').replace('°F', '°');
   };
 
-  // Remove first day (today) and keep the rest
   const upcomingDays = forecastDays.slice(1);
 
   return (

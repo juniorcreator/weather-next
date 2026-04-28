@@ -16,7 +16,6 @@ interface CurrentWeatherCardProps {
 
 export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeatherCardProps) {
   if (!weather) {
-    // Skeleton loader that matches the final layout to prevent layout shift
     return (
       <div className="weather-card bg-gradient-to-br from-temp-mild-start/75 to-temp-mild-end/75 p-4 px-4 sm:px-5 text-white shadow-2xl relative overflow-hidden h-full w-full">
         <div className="relative z-10">
@@ -50,15 +49,12 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
   const gradientClass = getTemperatureGradient(weather.current.temp_c);
   const weatherIcon = getWeatherIconCode(weather.current.condition.code);
 
-  // Calculate min/max temperature including current temperature and hourly forecast
   const getMinMaxTemp = () => {
     const currentTemp = weather.current.temp_c;
     const todayHourly = weather.forecast.forecastday[0].hour;
     
-    // Get all temperatures from hourly forecast
     const hourlyTemps = todayHourly.map(hour => hour.temp_c);
     
-    // Include current temperature in the calculation
     const allTemps = [currentTemp, ...hourlyTemps];
     
     return {

@@ -23,7 +23,6 @@ interface GroupedHours {
   hours: Hour[];
 }
 
-// Filter hours to only include specific times (00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00)
 const filterHours = (hours: Hour[]): Hour[] => {
   const allowedTimes = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"];
   
@@ -33,7 +32,6 @@ const filterHours = (hours: Hour[]): Hour[] => {
   });
 };
 
-// Group hours by time of day
 const groupHoursByPeriod = (hours: Hour[]): GroupedHours[] => {
   const grouped: { [key in TimeOfDay]: Hour[] } = {
     Night: [],
@@ -57,17 +55,14 @@ const groupHoursByPeriod = (hours: Hour[]): GroupedHours[] => {
     }
   });
 
-  // Convert to array and filter out empty groups
   return Object.entries(grouped)
     .map(([period, hours]) => ({ period: period as TimeOfDay, hours }))
     .filter((group) => group.hours.length > 0);
 };
 
-// Memoized DailyForecast component for optimal performance during horizontal scrolling
 const MemoizedDailyForecast = memo(DailyForecast);
 
 export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: DayDetailViewProps) {
-  // Refs for scroll container and day elements
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const dayRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const isProgrammaticScroll = useRef<boolean>(false);
@@ -76,10 +71,8 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
   const lastSelectedDayRef = useRef<string | null>(null);
   const intersectionDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Filter and group hours for the current day
   const filteredHours = useMemo(() => filterHours(day.hour), [day.hour]);
   
-  // Calculate global min/max temperatures from filtered hours of the current day
   const { globalMin, globalMax } = useMemo(() => {
     if (filteredHours.length === 0) return { globalMin: 0, globalMax: 0 };
     
@@ -90,7 +83,6 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
     return { globalMin, globalMax };
   }, [filteredHours]);
 
-  // Set ref callback for each day
   const setDayRef = useCallback((date: string, element: HTMLDivElement | null) => {
     if (element) {
       dayRefs.current.set(date, element);
@@ -99,41 +91,30 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
     }
   }, []);
 
-  // Intersection Observer to detect which day is most visible during scroll
   useEffect(() => {
     if (!scrollContainerRef.current || dayRefs.current.size === 0) return;
 
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      // Ignore during programmatic scroll
       if (isProgrammaticScroll.current) return;
 
-      // Clear previous debounce timeout
       if (intersectionDebounceRef.current) {
         clearTimeout(intersectionDebounceRef.current);
       }
 
-      // Debounce the day switching to avoid flickering
-      // But check current scroll position when executing, not stale entries
       intersectionDebounceRef.current = setTimeout(() => {
-        // Check current scroll position and find most visible day at this moment
         const scrollContainer = scrollContainerRef.current;
         if (!scrollContainer) return;
 
         let mostVisibleDate: string | null = null;
         let maxVisibility = 0;
         const containerRect = scrollContainer.getBoundingClientRect();
-        // Use left edge + small offset (20% of width) instead of center for faster switching
         const referencePoint = containerRect.left + containerRect.width * 0.2;
 
-        // Find the day element closest to the reference point (left edge + offset)
         dayRefs.current.forEach((element, date) => {
           const elementRect = element.getBoundingClientRect();
           
-          // Check if element is visible in viewport
           if (elementRect.right > containerRect.left && elementRect.left < containerRect.right) {
-            // Calculate distance from reference point (closer to left = better)
             const distanceFromRef = Math.abs(elementRect.left - referencePoint);
-            // Higher visibility for elements closer to reference point
             const visibility = 1 / (1 + distanceFromRef / containerRect.width);
 
             if (visibility > maxVisibility) {
@@ -143,9 +124,7 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
           }
         });
 
-        // Update selected day if we found a more visible one
         if (mostVisibleDate && mostVisibleDate !== selectedDay?.date && mostVisibleDate !== lastSelectedDayRef.current) {
-          // Mark that this change is from Intersection Observer
           isIntersectionTriggered.current = true;
           lastSelectedDayRef.current = mostVisibleDate;
           
@@ -154,53 +133,45 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
             onDayClick(foundDay);
           }
         }
-      }, 50); // 50ms debounce delay - faster response
+      }, 50);
     };
 
     const observer = new IntersectionObserver(handleIntersection, {
       root: scrollContainerRef.current,
-      rootMargin: '0px', // Use full viewport for more accurate detection
+      rootMargin: '0px',
       threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
     });
 
-    // Observe all day elements
     dayRefs.current.forEach((element) => {
       observer.observe(element);
     });
 
     return () => {
       observer.disconnect();
-      // Clear debounce timeout on cleanup
       if (intersectionDebounceRef.current) {
         clearTimeout(intersectionDebounceRef.current);
       }
     };
   }, [allDays, selectedDay, onDayClick]);
 
-  // Handle manual scroll
   const handleScroll = useCallback(() => {
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
 
-    // Reset programmatic scroll flag after scroll ends
     scrollTimeoutRef.current = setTimeout(() => {
       isProgrammaticScroll.current = false;
     }, 150);
   }, []);
 
-  // Auto-scroll to selected day when it changes (only for manual clicks, not Intersection Observer)
   useEffect(() => {
-    // Skip if this was triggered by Intersection Observer - don't scroll at all, keep current position
     if (isIntersectionTriggered.current) {
-      // Reset flag after re-render completes
       const timeoutId = setTimeout(() => {
         isIntersectionTriggered.current = false;
       }, 0);
       return () => clearTimeout(timeoutId);
     }
     
-    // Update last selected day ref for manual clicks
     if (selectedDay) {
       lastSelectedDayRef.current = selectedDay.date;
     }
@@ -211,21 +182,17 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
     const scrollContainer = scrollContainerRef.current;
     
     if (dayElement && scrollContainer) {
-      // Set flag to prevent intersection observer from triggering
       isProgrammaticScroll.current = true;
       
-      // Calculate position relative to scroll container
       const containerRect = scrollContainer.getBoundingClientRect();
       const elementRect = dayElement.getBoundingClientRect();
       const scrollLeft = scrollContainer.scrollLeft + (elementRect.left - containerRect.left);
       
-      // Scroll only horizontally, avoiding vertical page scroll
       scrollContainer.scrollTo({
         left: scrollLeft,
         behavior: "auto",
       });
 
-      // Reset flag after scroll completes
       setTimeout(() => {
         isProgrammaticScroll.current = false;
       }, 100);
@@ -287,7 +254,6 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
                   data-day-date={dayItem.date}
                   className="flex items-start gap-1"
                 >
-                  {/* Day separator */}
                   {dayIndex > 0 && (
                     <div className="flex flex-col items-center h-full justify-center flex-shrink-0 relative">
                       <div className="absolute rounded-full top-0 bottom-0 w-[1px] bg-border/50" />
@@ -299,7 +265,6 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
                     </div>
                   )}
                   
-                  {/* Day periods */}
                   <div className="flex justify-between gap-4">
                     {groupedHours.map((group) => (
                       <div key={`${dayItem.date}-${group.period}`} className="flex-1">
@@ -422,7 +387,6 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
             </div>
           </div>
 
-          {/*sun details*/}
           <div className="bg-muted/40 col-span-2 rounded-lg p-3 flex items-center justify-around">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-orange-500/10">
@@ -446,8 +410,6 @@ export function DayDetailView({ day, unit, allDays, onDayClick, selectedDay }: D
               </div>
             </div>
           </div>
-          {/*sun details*/}
-
         </div>
       </div>
     </div>

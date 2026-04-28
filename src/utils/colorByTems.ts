@@ -15,12 +15,10 @@ function rgbToHex(c: ColorRGB): string {
   return "#" + toHex(r) + toHex(g) + toHex(b);
 }
 
-// Линейная интерполяция
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
-// Интерпортируем цвета
 function interpColor(c1: ColorRGB, c2: ColorRGB, t: number): ColorRGB {
   return {
     r: lerp(c1.r, c2.r, t),
@@ -29,11 +27,7 @@ function interpColor(c1: ColorRGB, c2: ColorRGB, t: number): ColorRGB {
   };
 }
 
-/**
- * Возвращает цвет для температуры по заданной шкале
- */
 export function getAppleStyleTempColor(temp: number): string {
-  // узловые точки
   const stops: [number, string][] = [
     [-45, "#0033aa"],
     [-10, "#3366ff"],
@@ -44,7 +38,6 @@ export function getAppleStyleTempColor(temp: number): string {
     [45, "#cc0000"],
   ];
 
-  // если temp ниже минимума или выше максимума — зажать
   if (temp <= stops[0][0]) {
     return stops[0][1];
   }
@@ -52,7 +45,6 @@ export function getAppleStyleTempColor(temp: number): string {
     return stops[stops.length - 1][1];
   }
 
-  // найти между какими двумя узловыми точками находится temp
   for (let i = 0; i < stops.length - 1; i++) {
     const [t1, hex1] = stops[i];
     const [t2, hex2] = stops[i + 1];
@@ -65,6 +57,5 @@ export function getAppleStyleTempColor(temp: number): string {
     }
   }
 
-  // запасной вариант
   return "#000000";
 }

@@ -14,9 +14,7 @@ import { CompactWeeklyForecast } from "@/components/ui/CompactWeeklyForecast";
 import { HourlyForecast } from "@/components/HourlyForecast";
 import { useTemperatureUnit } from "@/hooks/useWeatherData";
 
-// Dynamic imports for components below fold
 const DayDetailView = dynamic(() => import('@/components/DayDetailView').then(mod => ({ default: mod.DayDetailView })));
-
 const PollenAirQuality = dynamic(() => import('@/components/PollenAirQuality').then(mod => ({ default: mod.PollenAirQuality })));
 
 interface SearchProps {
@@ -29,15 +27,12 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
   const [error, setError] = useState("");
   const [weather, setWeather] = useState<RootWeather | null>(initialWeatherData);
 
-  // Helper function to save location to both localStorage and cookies
   const saveLocation = useCallback((locationData: { cityName?: string; lat?: number; lon?: number }) => {
     try {
-      // Save to localStorage for client-side use
       localStorage.setItem('weather-location', JSON.stringify(locationData));
       
-      // Save to cookies for server-side use on next page load
       const cookieValue = JSON.stringify(locationData);
-      const maxAge = 365 * 24 * 60 * 60; // 1 year
+      const maxAge = 365 * 24 * 60 * 60;
       document.cookie = `weather-location=${encodeURIComponent(cookieValue)}; path=/; max-age=${maxAge}; SameSite=Lax`;
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
@@ -52,16 +47,13 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
       return;
     }
     
-    // Optimize: skip API call if same city is searched
     if (weather?.location.name?.toLowerCase() === city.toLowerCase()) {
       return;
     }
     
     setError("");
-    // Reset selectedDay before fetching new data to ensure DayDetailView gets fresh data
     setSelectedDay(null);
     
-    // const data = await getCityWeatherSimple(city);
     const data: RootWeather = await getWeather(city);
 
     if(data.error) {
@@ -69,19 +61,16 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
       return;
     }
     
-    // Save location to both localStorage and cookies after successful fetch
     const locationData: {
       cityName?: string;
       lat?: number;
       lon?: number;
     } = {};
     
-    // Save city name
     if (data.location?.name) {
       locationData.cityName = data.location.name;
     }
     
-    // Save coordinates if available
     if (data.location?.lat && data.location?.lon) {
       locationData.lat = data.location.lat;
       locationData.lon = data.location.lon;
@@ -95,10 +84,8 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
 
   const handleFetchDataByLocation = async (lat: number, lon: number) => {
     setError("");
-    // Reset selectedDay before fetching new data
     setSelectedDay(null);
     
-    // Format coordinates as "lat,lon" for WeatherAPI.com
     const query = `${lat},${lon}`;
     const data: RootWeather = await getWeather(query);
 
@@ -107,7 +94,6 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
       return;
     }
     
-    // Save location to both localStorage and cookies after successful fetch
     const locationData: {
       cityName?: string;
       lat?: number;
@@ -117,7 +103,6 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
       lon,
     };
     
-    // Save city name from API response
     if (data.location?.name) {
       locationData.cityName = data.location.name;
     }
@@ -130,7 +115,6 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
 
   const handleFetchDataByIP = async () => {
     setError("");
-    // Reset selectedDay before fetching new data
     setSelectedDay(null);
     
     try {
@@ -141,7 +125,6 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
         return;
       }
       
-      // Save location to both localStorage and cookies after successful fetch
       if (data.location?.lat && data.location?.lon) {
         const locationData: {
           cityName?: string;
@@ -152,7 +135,6 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
           lon: data.location.lon,
         };
         
-        // Save city name from API response
         if (data.location?.name) {
           locationData.cityName = data.location.name;
         }
@@ -176,13 +158,10 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
     }
   };
 
-  // Initialize weather data from server-side props and process it
   useEffect(() => {
     if (initialWeatherData) {
-      // Process initial data from server
       getHoursInterval(initialWeatherData.forecast.forecastday[0].hour);
       
-      // Save location to both localStorage and cookies if not already saved
       try {
         const saved = localStorage.getItem('weather-location');
         if (!saved && initialWeatherData.location) {
@@ -213,9 +192,7 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
     }
   }, [initialWeatherData, saveLocation]);
 
-  // Check localStorage for saved location on mount (only if no initial data)
   useEffect(() => {
-    // Skip if we already have initial weather data from server
     if (initialWeatherData) {
       return;
     }
@@ -226,13 +203,11 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
         if (saved) {
           const parsed = JSON.parse(saved);
           
-          // If coordinates are available, use them (more accurate)
           if (parsed.lat && parsed.lon) {
             await handleFetchDataByLocation(parsed.lat, parsed.lon);
             return;
           }
           
-          // If only city name is available, use it
           if (parsed.cityName) {
             await handleFetchData(parsed.cityName);
             return;
@@ -244,27 +219,21 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
         }
       }
       
-      // Fallback to default city if no saved location
       await handleFetchData("New York");
     };
     
     loadSavedLocation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
+  }, []);
 
   useEffect(() => {
     if (weather?.forecast.forecastday) {
-      // Always check if selectedDay belongs to current weather data
       if (!selectedDay) {
-        // If no selectedDay, set it to second day
         setSelectedDay(weather.forecast.forecastday[1]);
       } else {
-        // Check if selectedDay belongs to current weather by comparing dates
         const dayExistsInCurrentWeather = weather.forecast.forecastday.some(
           day => day.date === selectedDay.date
         );
         
-        // If selectedDay doesn't belong to current weather, update it
         if (!dayExistsInCurrentWeather) {
           setSelectedDay(weather.forecast.forecastday[1]);
         }
@@ -272,15 +241,12 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
     }
   }, [weather]);
 
-  // Don't render anything until weather data is loaded
   if (!weather) {
     return null;
   }
-  // console.log(weather, 'weather');
 
   return (
     <>
-      {/*search and settings*/}
       <WeatherHeader
         unit={unit}
         onToggleUnit={toggleUnit}
@@ -289,9 +255,7 @@ const Search = ({ initialWeatherData = null }: SearchProps) => {
         onHandleFetchData={handleFetchData}
         onHandleFetchDataByIP={handleFetchDataByIP}
       />
-      {/*search and settings*/}
 
-      {/*{error && <div className="text-center">{error}</div>}*/}
       <main className="container mx-auto p-4 sm:p-6 space-y-6 max-w-5xl">
         <h1 className="sr-only">Weather Forecast Application</h1>
         <div className="grid lg:grid-cols-20 gap-3 lg:items-stretch">

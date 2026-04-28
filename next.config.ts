@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Image optimization configuration
   images: {
     remotePatterns: [
       {
@@ -10,21 +9,16 @@ const nextConfig: NextConfig = {
         pathname: '/weather/**',
       },
     ],
-    // Optimize images for production
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
   },
   
-  // Compression for production
   compress: true,
   
-  // Remove X-Powered-By header for security
   poweredByHeader: false,
   
-  // Production optimizations
   reactStrictMode: true,
   
-  // Headers for security and performance
   async headers() {
     return [
       {

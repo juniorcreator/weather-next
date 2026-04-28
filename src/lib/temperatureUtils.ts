@@ -1,5 +1,3 @@
-// Temperature conversion and gradient utilities
-
 import {Forecastday} from "@/types/weather";
 
 export function celsiusToFahrenheit(celsius: number): number {
@@ -29,17 +27,16 @@ export function getTemperatureGradient(tempCelsius: number): string {
 }
 
 export function getWeatherIconCode(code: number): string {
-  // OpenWeatherMap icon codes
-  if (code >= 200 && code < 300) return '⛈️'; // Thunderstorm
-  if (code >= 300 && code < 400) return '🌧️'; // Drizzle
-  if (code >= 500 && code < 600) return '🌧️'; // Rain
-  if (code >= 600 && code < 700) return '❄️'; // Snow
-  if (code >= 700 && code < 800) return '🌫️'; // Atmosphere
-  if (code === 800) return '☀️'; // Clear
-  if (code === 801) return '🌤️'; // Few clouds
-  if (code === 802) return '⛅'; // Scattered clouds
-  if (code === 803) return '🌥️'; // Broken clouds
-  if (code === 804) return '☁️'; // Overcast
+  if (code >= 200 && code < 300) return '⛈️';
+  if (code >= 300 && code < 400) return '🌧️';
+  if (code >= 500 && code < 600) return '🌧️';
+  if (code >= 600 && code < 700) return '❄️';
+  if (code >= 700 && code < 800) return '🌫️';
+  if (code === 800) return '☀️';
+  if (code === 801) return '🌤️';
+  if (code === 802) return '⛅';
+  if (code === 803) return '🌥️';
+  if (code === 804) return '☁️';
   return '🌤️';
 }
 
@@ -48,7 +45,6 @@ export function formatTime(date: Date): string {
 }
 
 export function formatDayName(date: Date, isFirst?: boolean): string {
-  // If this is the first element, always return "Today"
   if (isFirst) return 'Today';
 
   return date.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit' });

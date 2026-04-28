@@ -8,23 +8,19 @@ interface PollenAirQualityProps {
 }
 
 export function PollenAirQuality({ pollen, airQuality }: PollenAirQualityProps) {
-  // Fix getPollenLevel function according to API documentation
   const getPollenLevel = (value: number) => {
     if (value >= 1 && value < 20) return { text: 'Low', color: 'text-green-400' };
     if (value >= 20 && value < 100) return { text: 'Moderate', color: 'text-yellow-400' };
     if (value >= 100 && value < 300) return { text: 'High', color: 'text-orange-400' };
     if (value >= 300) return { text: 'Very High', color: 'text-red-500' };
-    // Fallback for values < 1
     return { text: 'Low', color: 'text-green-400' };
   };
 
-  // Get pollen recommendation based on overall risk
   const getPollenRecommendation = (pollen: Pollen): string => {
     const treeValue = pollen.Alder + pollen.Birch + pollen.Hazel + pollen.Oak;
     const weedValue = pollen.Mugwort + pollen.Ragweed;
     const grassValue = pollen.Grass;
     
-    // Get maximum value among all types
     const maxValue = Math.max(treeValue, grassValue, weedValue);
     
     if (maxValue >= 1 && maxValue < 20) {
@@ -43,7 +39,6 @@ export function PollenAirQuality({ pollen, airQuality }: PollenAirQualityProps) 
     return "Safe to go outside. Minimal pollen levels.";
   };
 
-  // Get air quality recommendation based on US EPA index
   const getAirQualityRecommendation = (airQuality: AirQuality): string => {
     const epaIndex = airQuality["us-epa-index"];
     
@@ -78,7 +73,6 @@ export function PollenAirQuality({ pollen, airQuality }: PollenAirQualityProps) 
         </div>
 
         <div className="space-y-3 mb-4">
-          {/* Tree pollen types */}
           <div className="space-y-2">
             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Tree</div>
             <div className="space-y-1.5 pl-2">
@@ -145,7 +139,6 @@ export function PollenAirQuality({ pollen, airQuality }: PollenAirQualityProps) 
             </div>
           </div>
 
-          {/* Grass */}
           <div className="space-y-2">
             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Grass</div>
             <div className="space-y-1.5 pl-2">
@@ -167,7 +160,6 @@ export function PollenAirQuality({ pollen, airQuality }: PollenAirQualityProps) 
             </div>
           </div>
 
-          {/* Weed pollen types */}
           <div className="space-y-2">
             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Weed</div>
             <div className="space-y-1.5 pl-2">
@@ -227,7 +219,6 @@ export function PollenAirQuality({ pollen, airQuality }: PollenAirQualityProps) 
         </div>
 
         <div className="space-y-3 mb-4">
-          {/* Particulate Matter */}
           <div className="space-y-2">
             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Particulate Matter</div>
             <div className="space-y-1.5 pl-2">
@@ -242,7 +233,6 @@ export function PollenAirQuality({ pollen, airQuality }: PollenAirQualityProps) 
             </div>
           </div>
 
-          {/* Gases */}
           <div className="space-y-2">
             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Gases</div>
             <div className="space-y-1.5 pl-2">
@@ -265,7 +255,6 @@ export function PollenAirQuality({ pollen, airQuality }: PollenAirQualityProps) 
             </div>
           </div>
 
-          {/* Air Quality Indices */}
           <div className="space-y-2">
             <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Indices</div>
             <div className="space-y-1.5 pl-2">

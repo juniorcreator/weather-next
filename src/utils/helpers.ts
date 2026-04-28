@@ -41,5 +41,5 @@ export function getClosestTimeIndex(target: string, times: Hour[]): number {
     }
   });
 
-  return closestIndex; // вернёт индекс ближайшего
+  return closestIndex;
 };

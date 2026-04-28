@@ -10,7 +10,6 @@ export function normalizeImageUrl(url: string, size: string = '64x64'): string {
   
   normalizedUrl = normalizedUrl.replace(/\d+x\d+/g, size);
   
-  // Convert protocol-relative URLs (//) to https://
   if (normalizedUrl.startsWith('//')) {
     normalizedUrl = `https:${normalizedUrl}`;
   }

@@ -38,7 +38,6 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Debounced search for autocomplete
   useEffect(() => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
@@ -61,7 +60,7 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
       } finally {
         setIsLoadingSuggestions(false);
       }
-    }, 300); // 300ms debounce
+    }, 300);
 
     return () => {
       if (searchTimeoutRef.current) {
@@ -81,7 +80,6 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
     handleLocationSelect(suggestion);
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -102,7 +100,6 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
     requestLocation();
   };
 
-  // When location is obtained from geolocation request (user clicked button), call onLocationSelect
   useEffect(() => {
     if (location && userRequestedRef.current && !locationProcessedRef.current) {
       locationProcessedRef.current = true;
@@ -112,10 +109,8 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
     }
   }, [location, onLocationSelect]);
 
-  // Show error when it occurs after user requested location, or try IP fallback
   useEffect(() => {
     if (geoError && userRequestedRef.current && !geoLoading) {
-      // If error is IP_FALLBACK, try to use IP-based location
       if (geoError === 'IP_FALLBACK' && onHandleFetchDataByIP) {
         setShowError(false);
         onHandleFetchDataByIP();
@@ -125,7 +120,6 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
       }
       
       setShowError(true);
-      // Auto-hide error after 5 seconds
       const timer = setTimeout(() => {
         setShowError(false);
         userRequestedRef.current = false;
@@ -149,12 +143,10 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
               setShowResults(true);
             }}
             onKeyDown={(e) => {
-              // Handle Enter key
               if (e.key === 'Enter') {
                 onHandleKeyDown(e, searchQuery);
                 setShowResults(false);
               }
-              // Handle Escape key
               if (e.key === 'Escape') {
                 setShowResults(false);
               }

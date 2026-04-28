@@ -15,7 +15,6 @@ export function DailyForecast({ daily, unit, onDayClick, selectedDay }: DailyFor
   const dayRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const isManualClick = useRef(false);
 
-  // Set ref callback for each day
   const setDayRef = useCallback((date: string, element: HTMLButtonElement | null) => {
     if (element) {
       dayRefs.current.set(date, element);
@@ -24,11 +23,9 @@ export function DailyForecast({ daily, unit, onDayClick, selectedDay }: DailyFor
     }
   }, []);
 
-  // Auto-scroll to selected day when it changes
   useEffect(() => {
     if (!selectedDay || !containerRef.current) return;
 
-    // Skip auto-scroll if this was triggered by manual click
     if (isManualClick.current) {
       isManualClick.current = false;
       return;
@@ -38,21 +35,17 @@ export function DailyForecast({ daily, unit, onDayClick, selectedDay }: DailyFor
     const container = containerRef.current;
 
     if (dayElement && container) {
-      // Check if element is visible in container
       const containerRect = container.getBoundingClientRect();
       const elementRect = dayElement.getBoundingClientRect();
       
-      // Check if element is at least partially visible
       const isPartiallyVisible = 
         elementRect.right > containerRect.left && 
         elementRect.left < containerRect.right;
       
-      // Check if element is fully visible
       const isFullyVisible = 
         elementRect.left >= containerRect.left && 
         elementRect.right <= containerRect.right;
 
-      // Scroll only if element is not fully visible
       if (!isFullyVisible || !isPartiallyVisible) {
         dayElement.scrollIntoView({
           behavior: 'smooth',
@@ -63,7 +56,6 @@ export function DailyForecast({ daily, unit, onDayClick, selectedDay }: DailyFor
     }
   }, [selectedDay]);
 
-  // Restore scroll position when selectedDay changes (only for manual clicks)
   useLayoutEffect(() => {
     if (containerRef.current && isManualClick.current) {
       containerRef.current.scrollLeft = savedScroll.current;
@@ -72,10 +64,8 @@ export function DailyForecast({ daily, unit, onDayClick, selectedDay }: DailyFor
   }, [selectedDay]);
 
   const handleClick = (day: Forecastday) => {
-    // Mark as manual click
     isManualClick.current = true;
     
-    // Save current scroll position before state update
     if (containerRef.current) {
       savedScroll.current = containerRef.current.scrollLeft;
     }

@@ -1,8 +1,3 @@
-/**
- * Comprehensive list of popular cities for SEO and potential future use
- * Organized by country/region for easy reference
- */
-
 export interface City {
   name: string;
   country: string;
@@ -10,7 +5,6 @@ export interface City {
   population?: number;
 }
 
-// Popular US Cities (Top 50+ by population)
 export const usCities: City[] = [
   { name: "New York", country: "United States", region: "New York", population: 8336817 },
   { name: "Los Angeles", country: "United States", region: "California", population: 3979576 },
@@ -64,9 +58,7 @@ export const usCities: City[] = [
   { name: "Raleigh", country: "United States", region: "North Carolina", population: 474069 },
 ];
 
-// Major English-speaking cities (UK, Canada, Australia, New Zealand, Ireland, South Africa)
 export const englishSpeakingCities: City[] = [
-  // United Kingdom
   { name: "London", country: "United Kingdom", region: "England", population: 8982000 },
   { name: "Manchester", country: "United Kingdom", region: "England", population: 547627 },
   { name: "Birmingham", country: "United Kingdom", region: "England", population: 1141816 },
@@ -76,7 +68,6 @@ export const englishSpeakingCities: City[] = [
   { name: "Belfast", country: "United Kingdom", region: "Northern Ireland", population: 345006 },
   { name: "Cardiff", country: "United Kingdom", region: "Wales", population: 362750 },
   
-  // Canada
   { name: "Toronto", country: "Canada", region: "Ontario", population: 2930000 },
   { name: "Vancouver", country: "Canada", region: "British Columbia", population: 675218 },
   { name: "Calgary", country: "Canada", region: "Alberta", population: 1306784 },
@@ -87,7 +78,6 @@ export const englishSpeakingCities: City[] = [
   { name: "Quebec City", country: "Canada", region: "Quebec", population: 549459 },
   { name: "Halifax", country: "Canada", region: "Nova Scotia", population: 403131 },
   
-  // Australia
   { name: "Sydney", country: "Australia", region: "New South Wales", population: 5312163 },
   { name: "Melbourne", country: "Australia", region: "Victoria", population: 5078193 },
   { name: "Brisbane", country: "Australia", region: "Queensland", population: 2487098 },
@@ -97,38 +87,32 @@ export const englishSpeakingCities: City[] = [
   { name: "Darwin", country: "Australia", region: "Northern Territory", population: 147255 },
   { name: "Hobart", country: "Australia", region: "Tasmania", population: 240342 },
   
-  // New Zealand
   { name: "Auckland", country: "New Zealand", region: "Auckland", population: 1657000 },
   { name: "Wellington", country: "New Zealand", region: "Wellington", population: 215100 },
   { name: "Christchurch", country: "New Zealand", region: "Canterbury", population: 383200 },
   { name: "Hamilton", country: "New Zealand", region: "Waikato", population: 176500 },
   { name: "Dunedin", country: "New Zealand", region: "Otago", population: 130400 },
   
-  // Ireland
   { name: "Dublin", country: "Ireland", region: "Leinster", population: 1173179 },
   { name: "Cork", country: "Ireland", region: "Munster", population: 210000 },
   { name: "Limerick", country: "Ireland", region: "Munster", population: 102287 },
   { name: "Galway", country: "Ireland", region: "Connacht", population: 79934 },
   
-  // South Africa
   { name: "Cape Town", country: "South Africa", region: "Western Cape", population: 4618000 },
   { name: "Johannesburg", country: "South Africa", region: "Gauteng", population: 5636000 },
   { name: "Durban", country: "South Africa", region: "KwaZulu-Natal", population: 3442361 },
   { name: "Pretoria", country: "South Africa", region: "Gauteng", population: 741651 },
 ];
 
-// Combined list of all cities
 export const allCities: City[] = [
   ...usCities,
   ...englishSpeakingCities,
 ];
 
-// Helper function to get city names as array (useful for SEO keywords)
 export const getCityNames = (): string[] => {
   return allCities.map(city => city.name);
 };
 
-// Helper function to get city-specific keywords
 export const getCityKeywords = (cityName: string): string[] => {
   return [
     `weather ${cityName}`,
@@ -145,7 +129,6 @@ export const getCityKeywords = (cityName: string): string[] => {
   ];
 };
 
-// Export popular cities for quick access
 export const popularCities = [
   "New York",
   "Los Angeles",

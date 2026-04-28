@@ -22,7 +22,6 @@ interface GroupedHours {
   hours: Hour[];
 }
 
-// Filter hours to only include specific times (00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00)
 const filterHours = (hours: Hour[]): Hour[] => {
   const allowedTimes = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"];
   
@@ -32,7 +31,6 @@ const filterHours = (hours: Hour[]): Hour[] => {
   });
 };
 
-// Group hours by time of day
 const groupHoursByPeriod = (hours: Hour[]): GroupedHours[] => {
   const grouped: { [key in TimeOfDay]: Hour[] } = {
     Night: [],
@@ -56,15 +54,12 @@ const groupHoursByPeriod = (hours: Hour[]): GroupedHours[] => {
     }
   });
 
-  // Convert to array and filter out empty groups
   return Object.entries(grouped)
     .map(([period, hours]) => ({ period: period as TimeOfDay, hours }))
     .filter((group) => group.hours.length > 0);
 };
 
-// Find closest hour across all groups and return group info
 const findClosestHourInGroups = (localtime: string, groupedHours: GroupedHours[]) => {
-  // Flatten all hours from all groups
   const allHours: Hour[] = [];
   groupedHours.forEach(group => {
     allHours.push(...group.hours);
@@ -72,11 +67,9 @@ const findClosestHourInGroups = (localtime: string, groupedHours: GroupedHours[]
 
   if (allHours.length === 0) return null;
 
-  // Find closest hour index in flattened array
   const closestIndex = getClosestTimeIndex(localtime, allHours);
   const closestHour = allHours[closestIndex];
 
-  // Find which group contains this hour and its index in that group
   for (const group of groupedHours) {
     const groupIndex = group.hours.findIndex(h => h.time === closestHour.time);
     if (groupIndex !== -1) {
@@ -99,11 +92,9 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
     elementId: string;
   } | null>(null);
 
-  // Memoize filtered and grouped hours to prevent infinite loops
   const filteredHours = useMemo(() => filterHours(hourly), [hourly]);
   const groupedHours = useMemo(() => groupHoursByPeriod(filteredHours), [filteredHours]);
 
-  // Calculate global min/max temperatures from all filtered hours
   const { globalMin, globalMax } = useMemo(() => {
     if (filteredHours.length === 0) return { globalMin: 0, globalMax: 0 };
     
@@ -114,13 +105,11 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
     return { globalMin, globalMax };
   }, [filteredHours]);
 
-  // Find closest hour
   useEffect(() => {
     const closest = findClosestHourInGroups(localtime, groupedHours);
     setClosestHourInfo(closest);
   }, [localtime, groupedHours]);
 
-  // Auto-scroll to closest hour on mobile/tablet
   useEffect(() => {
     if (!closestHourInfo || !scrollContainerRef.current) return;
 
@@ -129,11 +118,9 @@ export function HourlyForecast({ hourly, unit, localtime }: HourlyForecastProps)
     const targetElement = container.querySelector(`[data-hour-id="${elementId}"]`) as HTMLElement;
 
     if (targetElement) {
-      // Check if mobile/tablet (viewport width < 1024px)
       const isMobile = window.innerWidth < 1024;
       
       if (isMobile) {
-        // Scroll to center the element
         const containerRect = container.getBoundingClientRect();
         const elementRect = targetElement.getBoundingClientRect();
         const scrollLeft = container.scrollLeft + (elementRect.left - containerRect.left) - (containerRect.width / 2) + (elementRect.width / 2);
