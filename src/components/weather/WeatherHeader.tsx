@@ -1,17 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, MapPin, Loader2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useGeolocation } from '@/hooks/useWeatherData';
+import React, { useState, useEffect, useRef } from "react";
+import { Search, MapPin, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useGeolocation } from "@/hooks/useWeatherData";
 import ToggleCF from "@/components/ToggleCF";
-import { searchLocations } from '@/utils/api-weatherapi';
-import Image from 'next/image';
+import { searchLocations } from "@/utils/api-weatherapi";
+import Image from "next/image";
 
 interface WeatherHeaderProps {
-  unit: 'C' | 'F';
+  unit: "C" | "F";
+  initialUnit: "C" | "F";
   onToggleUnit: () => void;
   onLocationSelect: (lat: number, lon: number) => void;
-  onHandleKeyDown: (event: React.KeyboardEvent<HTMLInputElement>, value: string) => void;
+  onHandleKeyDown: (
+    event: React.KeyboardEvent<HTMLInputElement>,
+    value: string,
+  ) => void;
   onHandleFetchData: (value: string) => void;
   onHandleFetchDataByIP?: () => void;
 }
@@ -26,13 +30,26 @@ interface LocationSuggestion {
   url: string;
 }
 
-export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKeyDown, onHandleFetchData, onHandleFetchDataByIP }: WeatherHeaderProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+export function WeatherHeader({
+  unit,
+  initialUnit,
+  onToggleUnit,
+  onLocationSelect,
+  onHandleKeyDown,
+  onHandleFetchData,
+  onHandleFetchDataByIP,
+}: WeatherHeaderProps) {
+  const [searchQuery, setSearchQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [showError, setShowError] = useState(false);
   const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const { location, requestLocation, loading: geoLoading, error: geoError } = useGeolocation();
+  const {
+    location,
+    requestLocation,
+    loading: geoLoading,
+    error: geoError,
+  } = useGeolocation();
   const userRequestedRef = useRef(false);
   const locationProcessedRef = useRef(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -56,7 +73,7 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
         console.log(results, " results 111");
         setSuggestions(results);
       } catch (error) {
-        console.error('Error fetching suggestions:', error);
+        console.error("Error fetching suggestions:", error);
         setSuggestions([]);
       } finally {
         setIsLoadingSuggestions(false);
@@ -83,14 +100,17 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowResults(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -112,14 +132,14 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
 
   useEffect(() => {
     if (geoError && userRequestedRef.current && !geoLoading) {
-      if (geoError === 'IP_FALLBACK' && onHandleFetchDataByIP) {
+      if (geoError === "IP_FALLBACK" && onHandleFetchDataByIP) {
         setShowError(false);
         onHandleFetchDataByIP();
         userRequestedRef.current = false;
         locationProcessedRef.current = false;
         return;
       }
-      
+
       setShowError(true);
       const timer = setTimeout(() => {
         setShowError(false);
@@ -132,10 +152,24 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
 
   return (
     <header className="flex items-center justify-center gap-4 p-4 border-b border-border/50 relative">
-      <nav className="flex flex-wrap items-center justify-start md:justify-center gap-3 md:gap-4 w-full" aria-label="Main navigation">
-        <Image src="/logo.svg" alt="Get weather app logo" width={180} height={54} />
-        <div className="w-full order-1 sm:order-0 relative sm:flex-1 sm:max-w-md" ref={dropdownRef}>
-          <Search onClick={() => onHandleFetchData(searchQuery)} className="absolute h-full left-3 top-1/2 -translate-y-1/2 w-4 text-muted-foreground cursor-pointer z-10" />
+      <nav
+        className="flex flex-wrap items-center justify-start md:justify-center gap-3 md:gap-4 w-full"
+        aria-label="Main navigation"
+      >
+        <Image
+          src="/logo.svg"
+          alt="Get weather app logo"
+          width={180}
+          height={54}
+        />
+        <div
+          className="w-full order-1 sm:order-0 relative sm:flex-1 sm:max-w-md"
+          ref={dropdownRef}
+        >
+          <Search
+            onClick={() => onHandleFetchData(searchQuery)}
+            className="absolute h-full left-3 top-1/2 -translate-y-1/2 w-4 text-muted-foreground cursor-pointer z-10"
+          />
           <Input
             placeholder="Search location..."
             value={searchQuery}
@@ -144,11 +178,11 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
               setShowResults(true);
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 onHandleKeyDown(e, searchQuery);
                 setShowResults(false);
               }
-              if (e.key === 'Escape') {
+              if (e.key === "Escape") {
                 setShowResults(false);
               }
             }}
@@ -159,7 +193,7 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
             }}
             className="pl-10 h-10 bg-card/50 border-border/50"
           />
-          
+
           {/* Dropdown with suggestions */}
           {showResults && (suggestions.length > 0 || isLoadingSuggestions) && (
             <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50">
@@ -177,7 +211,9 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
                     className="w-full cursor-pointer text-left px-4 py-3 hover:bg-accent/50 hover:text-accent-foreground transition-all flex items-center gap-2 rounded-md"
                   >
                     <MapPin className="h-4 w-4 text-primary transition-colors" />
-                    <span>{suggestion.name}, {suggestion.country}</span>
+                    <span>
+                      {suggestion.name}, {suggestion.country}
+                    </span>
                   </button>
                 ))
               )}
@@ -199,9 +235,9 @@ export function WeatherHeader({ unit, onToggleUnit, onLocationSelect, onHandleKe
             <MapPin className="size-4" />
           )}
         </Button>
-        <ToggleCF unit={unit} onToggleUnit={onToggleUnit} />
+        <ToggleCF initialUnit={initialUnit} onToggleUnit={onToggleUnit} />
       </nav>
-      
+
       {/* Error message */}
       {showError && geoError && (
         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-4 py-2 bg-destructive text-destructive-foreground text-sm rounded-md shadow-lg z-50 max-w-md text-center">

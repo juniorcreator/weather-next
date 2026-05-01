@@ -1,20 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface ToggleCFProps {
   onToggleUnit: () => void;
-  unit: 'C' | 'F';
+  initialUnit: "C" | "F";
 }
 
-const ToggleCF = ({onToggleUnit, unit} : ToggleCFProps) => {
+const ToggleCF = ({ onToggleUnit, initialUnit }: ToggleCFProps) => {
+  const [unit, setUnit] = useState<"C" | "F">(initialUnit);
+  const handleToggle = () => {
+    const newUnit = unit === "C" ? "F" : "C";
+    onToggleUnit();
+    setUnit(newUnit);
+  };
   return (
     <div className="flex items-center gap-1">
       <span>°C</span>
       <label className="relative inline-flex items-center cursor-pointer">
-        <input 
-          checked={unit === 'F'} 
-          onChange={onToggleUnit} 
-          type="checkbox" 
-          className="sr-only peer" 
+        <input
+          checked={unit === "F"}
+          onChange={handleToggle}
+          type="checkbox"
+          className="sr-only peer"
           suppressHydrationWarning
         />
         <div className="w-12 h-6 bg-border/50 rounded-full peer-checked:bg-ring/50 transition"></div>

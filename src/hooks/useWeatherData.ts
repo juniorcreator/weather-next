@@ -1,9 +1,12 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 
-const STORAGE_KEY = 'weather-location';
+const STORAGE_KEY = "weather-location";
+type TemperatureUnit = "C" | "F";
 
-export function useGeolocation() {
-  const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
+export const useGeolocation = () => {
+  const [location, setLocation] = useState<{ lat: number; lon: number } | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -17,113 +20,66 @@ export function useGeolocation() {
         }
       }
     } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to load saved location:', err);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to load saved location:", err);
       }
     }
   }, []);
 
-  const requestLocation = () => {
+  const requestLocation = async () => {
     setLoading(true);
     setError(null);
 
-    if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
-      setLoading(false);
-      return;
-    }
-
-    const geoOptions: PositionOptions = {
-      enableHighAccuracy: false,
-      timeout: 10000,
-      maximumAge: 300000,
-    };
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const coords = {
-          lat: position.coords.latitude,
-          lon: position.coords.longitude,
-        };
-        setLocation(coords);
-        setError(null);
-        
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(coords));
-        } catch (err) {
-          if (process.env.NODE_ENV === 'development') {
-            console.error('Failed to save location to localStorage:', err);
-          }
-        }
-        
-        setLoading(false);
-      },
-      (err: GeolocationPositionError) => {
-        const errorMessageLower = err.message?.toLowerCase() || '';
-        const isLocationUnknown = errorMessageLower.includes('location unknown') || 
-                                   errorMessageLower.includes('kclerrorlocationunknown');
-        
-        if (isLocationUnknown || err.code === 2 || err.code === 3) {
-          setError('IP_FALLBACK');
-          setLoading(false);
-          return;
-        }
-        
-        if (err.code === 1) {
-          setError('Location access denied. Please enable location permissions in your browser settings.');
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('Geolocation permission denied:', err.message);
-          }
-          setLoading(false);
-          return;
-        }
-        
-        setError(err.message || 'Failed to get location');
-        setLoading(false);
-      },
-      geoOptions
-    );
-  };
-
-  const clearSavedLocation = () => {
     try {
-      localStorage.removeItem(STORAGE_KEY);
-      setLocation(null);
-    } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to clear saved location:', err);
+      const response = await fetch("https://get.geojs.io/v1/ip/geo.json");
+      if (!response.ok) {
+        throw new Error("Network error occurred");
       }
+      const { latitude, longitude, city, ...rest } = await response.json();
+      setLocation({ lat: latitude, lon: longitude });
+      setError(null);
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ lat: latitude, lon: longitude }),
+      );
+      console.log("Rest geo data", rest);
+    } catch (error) {
+      throw new Error(`Could not get geo data: ${error}`);
+    } finally {
+      setLoading(false);
     }
   };
 
-  return { location, error, loading, requestLocation, clearSavedLocation };
-}
+  return { location, error, loading, requestLocation };
+};
 
-export function useTemperatureUnit() {
-  const [unit, setUnit] = useState<'C' | 'F'>('F');
-  const [mounted, setMounted] = useState(false);
+export const useTemperatureUnit = () => {
+  const [unit, setUnit] = useState<TemperatureUnit>("F");
+  const unit2 = useRef("F");
 
   const toggleUnit = () => {
     setUnit((current) => {
-      const newUnit = current === 'C' ? 'F' : 'C';
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('temperature-unit', newUnit);
+      const newUnit = current === "C" ? "F" : "C";
+      if (typeof window !== "undefined") {
+        localStorage.setItem("temperature-unit", newUnit);
       }
+      document.cookie = `temperature-unit=${newUnit}; path=/; max-age=31536000`;
       return newUnit;
     });
   };
 
-  useEffect(() => {
-    setMounted(true);
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('temperature-unit');
-      if (saved === 'F' || saved === 'C') {
+  useLayoutEffect(() => {
+    const iii = localStorage.getItem("temperature-unit");
+    console.log(iii, " iii");
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("temperature-unit");
+      console.log(saved, " saved");
+      if (saved === "F" || saved === "C") {
         setUnit(saved);
+        unit2.current = saved;
       }
     }
-  }, [])
+  }, []);
 
-  return { unit, toggleUnit, mounted };
-}
-
-
+  return { unit, unit2, toggleUnit };
+};
