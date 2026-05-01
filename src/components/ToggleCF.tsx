@@ -3,14 +3,16 @@ import React, { useState } from "react";
 interface ToggleCFProps {
   onToggleUnit: () => void;
   initialUnit: "C" | "F";
+  setInitCF: (value: "C" | "F") => void;
 }
 
-const ToggleCF = ({ onToggleUnit, initialUnit }: ToggleCFProps) => {
+const ToggleCF = ({ onToggleUnit, initialUnit, setInitCF }: ToggleCFProps) => {
   const [unit, setUnit] = useState<"C" | "F">(initialUnit);
   const handleToggle = () => {
     const newUnit = unit === "C" ? "F" : "C";
     onToggleUnit();
     setUnit(newUnit);
+    setInitCF(newUnit);
   };
   return (
     <div className="flex items-center gap-1">

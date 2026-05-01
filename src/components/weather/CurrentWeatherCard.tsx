@@ -1,30 +1,27 @@
-import {Cloud, ThermometerSun, CloudRain, Sunrise, Sunset} from 'lucide-react';
-import {
-  formatTemperature,
-  getTemperatureGradient,
-  getWeatherIconCode,
-} from '@/lib/temperatureUtils';
-import {RootWeather} from "@/types/weather";
-import Image from 'next/image';
-import { normalizeImageUrl } from '@/lib/utils';
+import { Cloud, ThermometerSun, CloudRain, Sunrise, Sunset } from "lucide-react";
+import { formatTemperature, getTemperatureGradient, getWeatherIconCode } from "@/lib/temperatureUtils";
+import { RootWeather } from "@/types/weather";
+import Image from "next/image";
+import { normalizeImageUrl } from "@/lib/utils";
 
 interface CurrentWeatherCardProps {
   weather: RootWeather | null;
   locationName: string | undefined;
-  unit: 'C' | 'F';
+  initCF: "C" | "F";
+  setInitCF: (value: "C" | "F") => void;
 }
 
-export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeatherCardProps) {
+export function CurrentWeatherCard({ weather, locationName, initCF }: CurrentWeatherCardProps) {
   if (!weather) {
     return (
       <div className="weather-card bg-gradient-to-br from-temp-mild-start/75 to-temp-mild-end/75 p-4 px-4 sm:px-5 text-white shadow-2xl relative overflow-hidden h-full w-full">
         <div className="relative z-10">
           <div className="h-7 sm:h-8 mb-3 skeleton-pulse w-48 sm:w-64 rounded"></div>
-          
+
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="h-18 sm:h-24 md:h-28 mb-1 sm:mb-3 skeleton-pulse w-32 sm:w-40 rounded"></div>
-              
+
               <div className="space-y-2 mt-2">
                 <div className="h-7 skeleton-pulse w-40 sm:w-48 rounded"></div>
                 <div className="h-6 skeleton-pulse w-36 sm:w-44 rounded"></div>
@@ -33,13 +30,13 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
             </div>
             <div className="size-30 md:size-40 skeleton-pulse rounded-full"></div>
           </div>
-          
+
           <div className="mt-2 pt-2 border-t border-white/40 flex items-center justify-between gap-2 md:gap-4 flex-wrap">
             <div className="h-4 sm:h-5 skeleton-pulse w-32 sm:w-40 rounded"></div>
             <div className="h-4 sm:h-5 skeleton-pulse w-28 sm:w-36 rounded"></div>
           </div>
         </div>
-        
+
         <div className="absolute left-1/4 bottom-0 sm:right-0 sm:left-auto w-50 sm:w-72 h-50 sm:h-72 opacity-10">
           <Cloud className="w-full h-full" />
         </div>
@@ -52,28 +49,27 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
   const getMinMaxTemp = () => {
     const currentTemp = weather.current.temp_c;
     const todayHourly = weather.forecast.forecastday[0].hour;
-    
-    const hourlyTemps = todayHourly.map(hour => hour.temp_c);
-    
+    const hourlyTemps = todayHourly.map((hour) => hour.temp_c);
     const allTemps = [currentTemp, ...hourlyTemps];
-    
-    return {
-      min: Math.min(...allTemps),
-      max: Math.max(...allTemps)
-    };
+
+    return { min: Math.min(...allTemps), max: Math.max(...allTemps) };
   };
 
   const { min, max } = getMinMaxTemp();
 
   return (
-    <div className={`weather-card ${gradientClass} p-4 px-4 sm:px-5 text-white shadow-2xl relative overflow-hidden h-full w-full`}>
+    <div
+      className={`weather-card ${gradientClass} p-4 px-4 sm:px-5 text-white shadow-2xl relative overflow-hidden h-full w-full`}
+    >
       <div className="relative z-10">
-        <h2 className="text-xl sm:text-2xl font-bold mb-3 drop-shadow-lg tracking-tight">{locationName}, {weather.location.country}</h2>
+        <h2 className="text-xl sm:text-2xl font-bold mb-3 drop-shadow-lg tracking-tight">
+          {locationName}, {weather.location.country}
+        </h2>
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <h1 className="text-5xl sm:text-7xl font-bold md:mb-2 mb-1 sm:mb-3 drop-shadow-2xl leading-none tracking-tighter">
-              {formatTemperature(weather.current.temp_c, unit)}
+              {formatTemperature(weather.current.temp_c, initCF)}
             </h1>
 
             <div className="space-y-2 drop-shadow-lg">
@@ -96,7 +92,8 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
                     d="M0 0h32v32H0z"
                     data-name="&lt;Transparent Rectangle&gt;"
                   ></path>
-                </svg> <p> Feels like {formatTemperature(weather.current.feelslike_c, unit)}</p>
+                </svg>{" "}
+                <p> Feels like {formatTemperature(weather.current.feelslike_c, initCF)}</p>
               </div>
               <p className="flex items-center gap-2 text-base font-medium">
                 <CloudRain className="size-4" />
@@ -104,11 +101,11 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
               </p>
             </div>
           </div>
-          <Image 
-            className="size-30 md:size-40 opacity-70" 
-            src={normalizeImageUrl(weather.current.condition.icon, '128x128')} 
-            alt={weather.current.condition.text} 
-            width={100} 
+          <Image
+            className="size-30 md:size-40 opacity-70"
+            src={normalizeImageUrl(weather.current.condition.icon, "128x128")}
+            alt={weather.current.condition.text}
+            width={100}
             height={100}
             priority
             loading="eager"
@@ -118,11 +115,13 @@ export function CurrentWeatherCard({ weather, locationName, unit }: CurrentWeath
         <div className="mt-2 pt-2 border-t border-white/40 flex items-center justify-between gap-2 md:gap-4 flex-wrap text-[13px] sm:text-base font-medium drop-shadow-md">
           <div className="flex items-center gap-2">
             <ThermometerSun className="size-4" />
-            Max {formatTemperature(max, unit).replace('°C', '°').replace('°F', '°')} / Min {formatTemperature(min, unit).replace('°C', '°').replace('°F', '°')}
+            Max {formatTemperature(max, initCF).replace("°C", "°").replace("°F", "°")} / Min{" "}
+            {formatTemperature(min, initCF).replace("°C", "°").replace("°F", "°")}
           </div>
           <div className="flex items-center gap-1">
             <Sunrise className="size-4" />
-            {weather.forecast.forecastday[0].astro.sunrise} /<Sunset className="size-4" />
+            {weather.forecast.forecastday[0].astro.sunrise} /
+            <Sunset className="size-4" />
             {weather.forecast.forecastday[0].astro.sunset}
           </div>
         </div>

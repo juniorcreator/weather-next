@@ -3,9 +3,7 @@ export function celsiusToFahrenheit(celsius: number): number {
 }
 
 export function formatTemperature(temp: number, unit: "C" | "F"): string {
-  return unit === "C"
-    ? `${Math.round(temp)}°C`
-    : `${Math.round(celsiusToFahrenheit(temp))}°F`;
+  return unit === "C" ? `${Math.round(temp)}°C` : `${Math.round(celsiusToFahrenheit(temp))}°F`;
 }
 
 export function getTemperatureGradient(tempCelsius: number): string {
@@ -37,11 +35,7 @@ export function getWeatherIconCode(code: number): string {
 }
 
 export function formatTime(date: Date): string {
-  return date.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+  return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
 export function formatDayName(date: Date, isFirst?: boolean): string {

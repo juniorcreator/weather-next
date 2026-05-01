@@ -13,14 +13,10 @@ import { HourlyForecast } from "@/components/HourlyForecast";
 import { useTemperatureUnit } from "@/hooks/useWeatherData";
 
 const DayDetailView = dynamic(() =>
-  import("@/components/DayDetailView").then((mod) => ({
-    default: mod.DayDetailView,
-  })),
+  import("@/components/DayDetailView").then((mod) => ({ default: mod.DayDetailView })),
 );
 const PollenAirQuality = dynamic(() =>
-  import("@/components/PollenAirQuality").then((mod) => ({
-    default: mod.PollenAirQuality,
-  })),
+  import("@/components/PollenAirQuality").then((mod) => ({ default: mod.PollenAirQuality })),
 );
 
 interface SearchProps {
@@ -32,26 +28,22 @@ const Search = ({ initialWeatherData = null, initialUnit }: SearchProps) => {
   const { unit, toggleUnit } = useTemperatureUnit();
   const [selectedDay, setSelectedDay] = useState<Forecastday | null>(null);
   const [error, setError] = useState("");
-  const [weather, setWeather] = useState<RootWeather | null>(
-    initialWeatherData,
-  );
+  const [weather, setWeather] = useState<RootWeather | null>(initialWeatherData);
+  const [initCF, setInitCF] = useState<"C" | "F">(initialUnit);
 
-  const saveLocation = useCallback(
-    (locationData: { cityName?: string; lat?: number; lon?: number }) => {
-      try {
-        localStorage.setItem("weather-location", JSON.stringify(locationData));
+  const saveLocation = useCallback((locationData: { cityName?: string; lat?: number; lon?: number }) => {
+    try {
+      localStorage.setItem("weather-location", JSON.stringify(locationData));
 
-        const cookieValue = JSON.stringify(locationData);
-        const maxAge = 365 * 24 * 60 * 60;
-        document.cookie = `weather-location=${encodeURIComponent(cookieValue)}; path=/; max-age=${maxAge}; SameSite=Lax`;
-      } catch (err) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Failed to save location:", err);
-        }
+      const cookieValue = JSON.stringify(locationData);
+      const maxAge = 365 * 24 * 60 * 60;
+      document.cookie = `weather-location=${encodeURIComponent(cookieValue)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    } catch (err) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to save location:", err);
       }
-    },
-    [],
-  );
+    }
+  }, []);
 
   const handleFetchData = async (city: string) => {
     if (!city) {
@@ -102,10 +94,7 @@ const Search = ({ initialWeatherData = null, initialUnit }: SearchProps) => {
       return;
     }
 
-    const locationData: { cityName?: string; lat?: number; lon?: number } = {
-      lat,
-      lon,
-    };
+    const locationData: { cityName?: string; lat?: number; lon?: number } = { lat, lon };
 
     if (data.location?.name) {
       locationData.cityName = data.location.name;
@@ -130,8 +119,10 @@ const Search = ({ initialWeatherData = null, initialUnit }: SearchProps) => {
       }
 
       if (data.location?.lat && data.location?.lon) {
-        const locationData: { cityName?: string; lat?: number; lon?: number } =
-          { lat: data.location.lat, lon: data.location.lon };
+        const locationData: { cityName?: string; lat?: number; lon?: number } = {
+          lat: data.location.lat,
+          lon: data.location.lon,
+        };
 
         if (data.location?.name) {
           locationData.cityName = data.location.name;
@@ -146,16 +137,11 @@ const Search = ({ initialWeatherData = null, initialUnit }: SearchProps) => {
       if (process.env.NODE_ENV === "development") {
         console.error("Failed to fetch weather by IP:", err);
       }
-      setError(
-        "Failed to determine your location. Please search for a city instead.",
-      );
+      setError("Failed to determine your location. Please search for a city instead.");
     }
   };
 
-  const handleKeyDown = async (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    value: string,
-  ) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, value: string) => {
     if (e.key === "Enter") {
       await handleFetchData(value);
     }
@@ -168,20 +154,13 @@ const Search = ({ initialWeatherData = null, initialUnit }: SearchProps) => {
       try {
         const saved = localStorage.getItem("weather-location");
         if (!saved && initialWeatherData.location) {
-          const locationData: {
-            cityName?: string;
-            lat?: number;
-            lon?: number;
-          } = {};
+          const locationData: { cityName?: string; lat?: number; lon?: number } = {};
 
           if (initialWeatherData.location.name) {
             locationData.cityName = initialWeatherData.location.name;
           }
 
-          if (
-            initialWeatherData.location.lat &&
-            initialWeatherData.location.lon
-          ) {
+          if (initialWeatherData.location.lat && initialWeatherData.location.lon) {
             locationData.lat = initialWeatherData.location.lat;
             locationData.lon = initialWeatherData.location.lon;
           }
@@ -254,7 +233,7 @@ const Search = ({ initialWeatherData = null, initialUnit }: SearchProps) => {
   return (
     <>
       <WeatherHeader
-        unit={unit}
+        setInitCF={setInitCF}
         initialUnit={initialUnit}
         onToggleUnit={toggleUnit}
         onLocationSelect={handleFetchDataByLocation}
@@ -268,26 +247,21 @@ const Search = ({ initialWeatherData = null, initialUnit }: SearchProps) => {
         <div className="grid lg:grid-cols-20 gap-3 lg:items-stretch">
           <div className="lg:col-span-12 flex">
             <CurrentWeatherCard
+              setInitCF={setInitCF}
+              initCF={initCF}
               weather={weather}
-              unit={unit}
               locationName={weather?.location.name}
             />
           </div>
           <div className="space-y-2 lg:col-span-8 flex flex-col">
-            <MetricsGrid
-              weather={weather.current}
-              airQuality={weather?.current.air_quality}
-            />
-            <CompactWeeklyForecast
-              forecastDays={weather.forecast.forecastday}
-              unit={unit}
-            />
+            <MetricsGrid weather={weather.current} airQuality={weather?.current.air_quality} />
+            <CompactWeeklyForecast forecastDays={weather.forecast.forecastday} unit={initCF} />
           </div>
         </div>
 
         <HourlyForecast
           hourly={weather.forecast.forecastday[0].hour}
-          unit={unit}
+          unit={initCF}
           localtime={weather.location.localtime}
         />
 
@@ -296,7 +270,7 @@ const Search = ({ initialWeatherData = null, initialUnit }: SearchProps) => {
             <DayDetailView
               key={`${weather.location.name}`}
               day={selectedDay}
-              unit={unit}
+              unit={initCF}
               allDays={weather.forecast.forecastday}
               onDayClick={setSelectedDay}
               selectedDay={selectedDay || undefined}
@@ -305,10 +279,7 @@ const Search = ({ initialWeatherData = null, initialUnit }: SearchProps) => {
         )}
 
         <Suspense fallback={null}>
-          <PollenAirQuality
-            pollen={weather.current.pollen}
-            airQuality={weather.current.air_quality}
-          />
+          <PollenAirQuality pollen={weather.current.pollen} airQuality={weather.current.air_quality} />
         </Suspense>
 
         <div className="text-center text-xs text-muted-foreground py-4">
@@ -316,9 +287,7 @@ const Search = ({ initialWeatherData = null, initialUnit }: SearchProps) => {
         </div>
 
         <footer className="text-center text-xs text-muted-foreground py-6 border-t border-border/50 mt-8">
-          <p>
-            &copy; {new Date().getFullYear()} Weather App. All rights reserved.
-          </p>
+          <p>&copy; {new Date().getFullYear()} Weather App. All rights reserved.</p>
         </footer>
       </main>
     </>

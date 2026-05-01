@@ -8,14 +8,11 @@ import { searchLocations } from "@/utils/api-weatherapi";
 import Image from "next/image";
 
 interface WeatherHeaderProps {
-  unit: "C" | "F";
   initialUnit: "C" | "F";
+  setInitCF: (value: "C" | "F") => void;
   onToggleUnit: () => void;
   onLocationSelect: (lat: number, lon: number) => void;
-  onHandleKeyDown: (
-    event: React.KeyboardEvent<HTMLInputElement>,
-    value: string,
-  ) => void;
+  onHandleKeyDown: (event: React.KeyboardEvent<HTMLInputElement>, value: string) => void;
   onHandleFetchData: (value: string) => void;
   onHandleFetchDataByIP?: () => void;
 }
@@ -31,25 +28,20 @@ interface LocationSuggestion {
 }
 
 export function WeatherHeader({
-  unit,
   initialUnit,
   onToggleUnit,
   onLocationSelect,
   onHandleKeyDown,
   onHandleFetchData,
   onHandleFetchDataByIP,
+  setInitCF,
 }: WeatherHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [showError, setShowError] = useState(false);
   const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const {
-    location,
-    requestLocation,
-    loading: geoLoading,
-    error: geoError,
-  } = useGeolocation();
+  const { location, requestLocation, loading: geoLoading, error: geoError } = useGeolocation();
   const userRequestedRef = useRef(false);
   const locationProcessedRef = useRef(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -100,10 +92,7 @@ export function WeatherHeader({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowResults(false);
       }
     };
@@ -156,16 +145,8 @@ export function WeatherHeader({
         className="flex flex-wrap items-center justify-start md:justify-center gap-3 md:gap-4 w-full"
         aria-label="Main navigation"
       >
-        <Image
-          src="/logo.svg"
-          alt="Get weather app logo"
-          width={180}
-          height={54}
-        />
-        <div
-          className="w-full order-1 sm:order-0 relative sm:flex-1 sm:max-w-md"
-          ref={dropdownRef}
-        >
+        <Image src="/logo.svg" alt="Get weather app logo" width={180} height={54} />
+        <div className="w-full order-1 sm:order-0 relative sm:flex-1 sm:max-w-md" ref={dropdownRef}>
           <Search
             onClick={() => onHandleFetchData(searchQuery)}
             className="absolute h-full left-3 top-1/2 -translate-y-1/2 w-4 text-muted-foreground cursor-pointer z-10"
@@ -229,13 +210,9 @@ export function WeatherHeader({
           className="shrink-0 cursor-pointer size-9 md:size-10"
           title={geoError || "Use my location"}
         >
-          {geoLoading ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <MapPin className="size-4" />
-          )}
+          {geoLoading ? <Loader2 className="size-4 animate-spin" /> : <MapPin className="size-4" />}
         </Button>
-        <ToggleCF initialUnit={initialUnit} onToggleUnit={onToggleUnit} />
+        <ToggleCF setInitCF={setInitCF} initialUnit={initialUnit} onToggleUnit={onToggleUnit} />
       </nav>
 
       {/* Error message */}

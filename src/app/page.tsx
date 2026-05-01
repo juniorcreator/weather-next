@@ -77,14 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
         title: cityTitle,
         description: cityDescription,
         siteName: "Get Forecast",
-        images: [
-          {
-            url: "/og-image.png",
-            width: 1200,
-            height: 630,
-            alt: `Weather Forecast for ${cityName}`,
-          },
-        ],
+        images: [{ url: "/og-image.png", width: 1200, height: 630, alt: `Weather Forecast for ${cityName}` }],
       },
       twitter: {
         card: "summary_large_image",
@@ -106,14 +99,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: defaultTitle,
       description: defaultDescription,
       siteName: "Get Forecast",
-      images: [
-        {
-          url: "/og-image.png",
-          width: 1200,
-          height: 630,
-          alt: "Weather Forecast App",
-        },
-      ],
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Weather Forecast App" }],
     },
     twitter: {
       card: "summary_large_image",
@@ -127,13 +113,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const initialWeatherData = await getInitialWeatherData();
-  const baseUrl =
-    process.env.NEXT_PUBLIC_APP_URL || "https://www.get-forecast.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.get-forecast.com";
   const cookieStore = await cookies();
-  const savedUnit = cookieStore.get("temperature-unit")?.value as
-    | "C"
-    | "F"
-    | undefined;
+  const savedUnit = cookieStore.get("temperature-unit")?.value as "C" | "F" | undefined;
   const initialUnit = savedUnit === "C" ? "C" : "F";
 
   const generateStructuredData = () => {
@@ -154,11 +136,7 @@ export default async function Home() {
       return {
         ...baseStructuredData,
         description,
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: "4.8",
-          ratingCount: "100",
-        },
+        aggregateRating: { "@type": "AggregateRating", ratingValue: "4.8", ratingCount: "100" },
         areaServed: {
           "@type": "City",
           name: cityName,
@@ -172,11 +150,7 @@ export default async function Home() {
       ...baseStructuredData,
       description:
         "Get accurate weather forecasts for New York, Los Angeles, Chicago, London, Toronto, Sydney and 1000+ cities worldwide. Real-time weather data, hourly and daily forecasts, 7-day outlook, air quality index, pollen count, UV index, and severe weather alerts.",
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "4.8",
-        ratingCount: "100",
-      },
+      aggregateRating: { "@type": "AggregateRating", ratingValue: "4.8", ratingCount: "100" },
     };
   };
 
@@ -189,10 +163,7 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <div className="min-h-screen bg-background">
-        <Search
-          initialUnit={initialUnit}
-          initialWeatherData={initialWeatherData}
-        />
+        <Search initialUnit={initialUnit} initialWeatherData={initialWeatherData} />
       </div>
     </div>
   );
